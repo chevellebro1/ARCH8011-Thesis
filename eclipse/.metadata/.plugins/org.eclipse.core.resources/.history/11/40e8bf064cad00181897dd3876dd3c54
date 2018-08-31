@@ -1,0 +1,78 @@
+package main;
+
+import feb.Node;
+import feb.Material;
+import feb.Beam3DCroSec;
+import feb.Beam3D;
+import feb.BoundaryCondition;
+import feb.Model;
+import feb.Deform;
+import feb.Response;
+import feb.License;
+
+public class cantilever {
+
+		public cantilever()
+		{
+		System.load("C:/Temp/Eclipse/workspace/Cantilever/karambaJAVA.dll");
+		
+		//load the license
+		License lic = License.Instance();
+		lic.loadLicense("License.lic", "public.key");
+		if (lic.error_flg()) {
+			System.out.println(lic.error_msg());
+			System.exit(1);
+		}
+		
+		feb.Node nodes[] = new Node[2];
+		nodes[0] = new Node(0,0,0);
+		nodes[1] = new Node(1,0,0);
+		
+		double E = 200000; // MN/m2
+		double G = 70000; // MN/m2
+		double gamma = 0.025; // MN/m3
+		Material material = new Material(E,G,gamma);
+		material.swigCMemOwn = false;
+		
+		double A = 0.05; // m2
+		double Iyy = 0.00001; // m4 moment of inertia about z axis
+		double Izz = 0.00001; // m4 moment of inertia about y axis
+		double Ipp = 0.003; // m4 torsional moment of inertia
+		double ky = 0.0; // rigid shear
+		double kz = 0.0; // rigid shear
+		Beam3DCroSec crosec = new Beam3DCroSec(A,Iyy,Izz,Ipp,ky,kz);
+		crosec.swigCMemOwn = false;
+		
+		Beam3D beam = new Beam3D(nodes[0], nodes[1], material, crosec);
+		
+		BoundaryCondition bcs[] = new BoundaryCondition[7];
+		// make the beam fixed on one side
+		bcs[0] = new BoundaryCondition(0, Node.DOF.x_t, BoundaryCondition.BCType.disp, 0);
+		bcs[1] = new BoundaryCondition(0, Node.DOF.y_t, BoundaryCondition.BCType.disp, 0);
+		bcs[2] = new BoundaryCondition(0, Node.DOF.z_t, BoundaryCondition.BCType.disp, 0);
+		bcs[3] = new BoundaryCondition(0, Node.DOF.x_r, BoundaryCondition.BCType.disp, 0);
+		bcs[4] = new BoundaryCondition(0, Node.DOF.y_r, BoundaryCondition.BCType.disp, 0);
+		bcs[5] = new BoundaryCondition(0, Node.DOF.z_r, BoundaryCondition.BCType.disp, 0);
+		//apply a point load in z-direction on the other side
+		bcs[6] = new BoundaryCondition(1, Node.DOF.z_r, BoundaryCondition.BCType.force, 1);
+		
+		Model model = new Model();
+		for (Node node : nodes) {
+			node.swigCMemOwn = false;
+			model.add(node);
+		}
+		
+		model.add(material);
+		model.add(crosec);
+		model.add(beam);
+		
+		//add arbitrary number of elements to test
+		//the limitation of the trial version of Karamba
+		//by default no elements are added
+		for (int i=0; i<0; i++) {
+			Beam3D added_beam = new Beam3D(nodes[0], nodes[1], material, crosec);
+			added_beam.swigCMemOwn = false;
+			model.add(added_beam);
+		}
+		}
+}

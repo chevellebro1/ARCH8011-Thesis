@@ -1,0 +1,51 @@
+package main;
+
+import feb.Node;
+import feb.Material;
+import feb.Beam3DCroSec;
+import feb.Beam3D;
+import feb.BoundaryCondition;
+import feb.Model;
+import feb.Deform;
+import feb.Response;
+import feb.License;
+
+public class cantilever {
+
+		public cantilever()
+		{
+		System.load("C:/Temp/Eclipse/workspace/Cantilever/karambaJAVA.dll");
+		
+		//load the license
+		License lic = License.Instance();
+		lic.loadLicense("License.lic", "public.key");
+		if (lic.error_flg()) {
+			System.out.println(lic.error_msg());
+			System.exit(1);
+		}
+		
+		feb.NodeState nodes[] = new Node[2];
+		nodes[0] = new Node(0,0,0);
+		nodes[1] = new Node(1,0,0);
+		
+		double E = 200000; // MN/m2
+		double G = 70000; // MN/m2
+		double gamma = 0.025; // MN/m3
+		Material material = new Material(E,G,gamma);
+		material.swigCMemOwn = false;
+		
+		double A = 0.05; // m2
+		double Iyy = 0.00001; // m4 moment of inertia about z axis
+		double Izz = 0.00001; // m4 moment of inertia about y axis
+		double Ipp = 0.003; // m4 torsional moment of inertia
+		double ky = 0.0; // rigid shear
+		double kz = 0.0; // rigid shear
+		Beam3DCroSec crosec = new Beam3DCroSec(A,Iyy,Izz,Ipp,ky,kz);
+		crosec.swigCMemOwn = false;
+		
+		Beam3D beam = new Beam3D(nodes[0], nodes[1], material, crosec);
+		
+		
+		
+		}
+}

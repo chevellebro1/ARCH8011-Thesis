@@ -10,5 +10,6 @@
 	<classpathentry kind="lib" path="src/peasy-math.jar"/>
 	<classpathentry kind="lib" path="src/peasycam.jar"/>
 	<classpathentry kind="lib" path="src/toxiclibscore.jar"/>
+	<classpathentry kind="lib" path="/ProcessingTest/toxiclibs_p5.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

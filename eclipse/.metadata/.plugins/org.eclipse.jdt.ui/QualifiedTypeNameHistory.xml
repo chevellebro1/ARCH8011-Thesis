@@ -3,4 +3,5 @@
     <fullyQualifiedTypeName name="feb.NodeState"/>
     <fullyQualifiedTypeName name="feb.Node.DOF"/>
     <fullyQualifiedTypeName name="feb.BoundaryCondition.BCType"/>
+    <fullyQualifiedTypeName name="toxi.geom.Vec3D"/>
 </qualifiedTypeNameHistroy>

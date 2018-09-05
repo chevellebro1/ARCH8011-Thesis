@@ -126,9 +126,7 @@ boolean showComponents = false;
 
 public void setup() {
   println("starting ",name);
-  //CAMERA
-  //size(1920, 1080, P3D);
-  
+  size(300,300,P3D);
   frameRate(30);
   cam = new PeasyCam(this, 0,0,0,100);
   cam.setRotations(-1.57f,-1.57f,0.0f);//left view
@@ -138,6 +136,9 @@ public void setup() {
   thread("loadFiles");
 }
 
+public void settings() {
+	size(800, 600, P3D);
+}
 
 
 public void loadFiles(){
@@ -1886,7 +1887,8 @@ public ArrayList<Vec3D> ImportPoints(String fileName){
   }
   return collection;
 }
-  public void settings() {  size(1280, 720, P3D);  smooth(); }
+ 
+
   static public void main(String[] passedArgs) {
     String[] appletArgs = new String[] { "processing" };
     if (passedArgs != null) {

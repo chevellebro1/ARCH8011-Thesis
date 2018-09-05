@@ -309,7 +309,7 @@ void update(){
      float factor = vecAdd.magnitude();//factor to be multiplied by the strength
      factor = Math.max(0, Math.min(radius, factor));//map the range from 0 to 1
      factor = factor/radius;
-     factor = (float) (Math.cos(factor*Math.PI)+1)*0.5;//cosinus instead of a bezier distribution, to mimic SI's FCurve
+     factor = (float) ((float) (Math.cos(factor*Math.PI)+1)*0.5);//cosinus instead of a bezier distribution, to mimic SI's FCurve
      vecAdd.scaleSelf(factor * strength);
      vec.addSelf(vecAdd);
    }
@@ -407,7 +407,7 @@ void update(){
    if(neighbors.size()==0) return new Vec3D();
    Vec3D mid = new Vec3D();
    for(Agent n : neighbors) mid.addSelf(n);
-   mid.scaleSelf(1.0/neighbors.size());
+   mid.scaleSelf((float) (1.0/neighbors.size()));
    if(Math.abs(x-mid.x)<Math.abs(y-mid.y) && Math.abs(x-mid.x)<Math.abs(z-mid.z)) target = new Vec3D(mid.x,y,z);// pull in x direction
    else if(Math.abs(y-mid.y)<Math.abs(z-mid.z)) target = new Vec3D(x,mid.y,z);// pull in y direction
    else target = new Vec3D(x,y,mid.z);// pull in z direction

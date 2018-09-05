@@ -48,6 +48,13 @@ import toxi.processing.*;
 import peasy.*;
 import processing.core.*;
 
+
+public class setup extends PApplet {
+	
+	public static void main(String[] args) {
+		PApplet.main("cellbasics.setup");
+	}
+	
 // VARIABLES
 PeasyCam cam;
 ArrayList<Vec3D> envSize = new ArrayList<Vec3D>(Arrays.asList(new Vec3D(-1000,-1000,0),new Vec3D(1000,1000,1000)));
@@ -115,7 +122,7 @@ boolean showComponents = false;
 
 
 
-void setup() {
+public setup() {
   println("starting ",name);
   //CAMERA
   //size(1920, 1080, P3D);
@@ -131,14 +138,14 @@ void setup() {
 
 
 
-void loadFiles(){
+public void loadFiles(){
   println("loading files...");
   // MESHES
   gfx = new ToxiclibsSupport(this);
   // Meshes
   meshFollow = new Mesh("MeshFollow.ply");
   //envSize = meshFollow.boundingBox();
-  center = envSize.get(0).add(envSize.get(1)).scale(0.5);
+  center = envSize.get(0).add(envSize.get(1)).scale((float) 0.5);
   
   // ATTRACTORS 
   attractors.add(new Attractor(new Vec3D(0,0,-10), -1));

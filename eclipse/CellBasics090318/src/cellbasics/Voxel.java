@@ -200,10 +200,10 @@ class Voxelgrid {
 
 
 
-class Voxel{
+public class Voxel{
   
   // VARIABLES
-  Voxelgrid voxelgrid;// the Voxelgrid to which the Voxel belongs
+  public Voxelgrid voxelgrid;// the Voxelgrid to which the Voxel belongs
   int voxelType;// type of the grid: 0 rectangular; 1 pyramid; 2 triangular
   float[] voxelSize;//sizes in x,y,z directions
   int type;// shape of the voxel: 0 pyramid; 1 tetrahedron

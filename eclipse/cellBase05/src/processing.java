@@ -7,7 +7,7 @@ import java.util.*;
 import peasy.*; 
 
 
-public class cellBase extends PApplet {
+public class processing extends PApplet {
 
 /**
  * Cell Growth Simulation
@@ -115,7 +115,6 @@ boolean showComponents = false;
 
 public void setup() {
   println("starting ",name);
-  frameRate(30);
   cam = new PeasyCam(this, 0,0,0,100);
   cam.setRotations(-1.57f,-1.57f,0.0f);//left view
   //perspective(PI/3.0, width/height, 0.001,100000);
@@ -125,7 +124,7 @@ public void setup() {
 }
 
 public void settings() {
-	size(800, 600, P3D);
+	size(300, 300, P3D);
 }
 
 
@@ -1878,7 +1877,7 @@ public ArrayList<Vec3D> ImportPoints(String fileName){
  
 
   static public void main(String[] passedArgs) {
-    String[] appletArgs = new String[] { "cellBase" };
+    String[] appletArgs = new String[] { "processing" };
     if (passedArgs != null) {
       PApplet.main(concat(appletArgs, passedArgs));
     } else {

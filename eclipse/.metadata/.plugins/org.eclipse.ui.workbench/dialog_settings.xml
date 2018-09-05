@@ -22,9 +22,21 @@
 			<item value="D:\CloudStation\CloudStation\rhardman11\Downloads\theme-21.epf"/>
 		</list>
 	</section>
+	<section name="FileSystemExportWizard">
+		<item value="false" key="WizardFileSystemResourceExportPage1.STORE_OVERWRITE_EXISTING_FILES_ID"/>
+		<item value="false" key="WizardFileSystemResourceExportPage1.STORE_RESOLVE_LINKED_RESOURCES_ID"/>
+		<item value="false" key="WizardFileSystemResourceExportPage1.STORE_CREATE_STRUCTURE_ID"/>
+		<list key="WizardFileSystemResourceExportPage1.STORE_DESTINATION_NAMES_ID">
+			<item value="K:\University of Cincinnati\2019 Thesis Year\~github\ARCH8011-Thesis\eclipse\cellBase02"/>
+		</list>
+	</section>
 	<section name="ImportExportAction">
+		<item value="org.eclipse.ui.wizards.export.FileSystem" key="ImportExportPage.STORE_SELECTED_EXPORT_WIZARD_ID"/>
 		<item value="org.eclipse.ui.wizards.import.ExternalProject" key="ImportExportPage.STORE_SELECTED_IMPORT_WIZARD_ID"/>
 		<list key="ImportExportPage.STORE_EXPANDED_IMPORT_CATEGORIES">
+			<item value="org.eclipse.ui.Basic"/>
+		</list>
+		<list key="ImportExportPage.STORE_EXPANDED_EXPORT_CATEGORIES">
 			<item value="org.eclipse.ui.Basic"/>
 		</list>
 	</section>
@@ -43,6 +55,7 @@
 			<item value="K:\University of Cincinnati\2019 Thesis Year\Thesis Studio 8009\Processing\processing\libraries\peasycam\library"/>
 			<item value="K:\University of Cincinnati\2019 Thesis Year\Thesis Studio 8009\Processing\processing\libraries\toxiclibs-complete-0020\toxiclibs_p5\library"/>
 			<item value="K:\University of Cincinnati\2019 Thesis Year\Thesis Studio 8009\Processing\processing\libraries\toxiclibs-complete-0020\toxiclibscore\library"/>
+			<item value="K:\University of Cincinnati\2019 Thesis Year\~github\ARCH8011-Thesis\eclipse\ProcessingExport"/>
 			<item value="C:\Users\Richard\Documents\Processing\libraries\toxiclibs-complete-0020\toxiclibs_p5\library"/>
 			<item value="C:\Users\Richard\Documents\Processing\libraries\toxiclibs-complete-0020\toxiclibscore\library"/>
 			<item value="C:\Users\Richard\Documents\Processing\libraries\peasycam\library"/>

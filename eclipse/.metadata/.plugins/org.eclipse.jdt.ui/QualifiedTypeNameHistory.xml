@@ -7,4 +7,8 @@
     <fullyQualifiedTypeName name="peasy.PeasyCam"/>
     <fullyQualifiedTypeName name="cellbasics.Agent"/>
     <fullyQualifiedTypeName name="cellbasics.Voxelgrid"/>
+    <fullyQualifiedTypeName name="java.text.SimpleDateFormat"/>
+    <fullyQualifiedTypeName name="java.io.PrintWriter"/>
+    <fullyQualifiedTypeName name="java.util.ArrayList"/>
+    <fullyQualifiedTypeName name="Agent.cellAgent"/>
 </qualifiedTypeNameHistroy>

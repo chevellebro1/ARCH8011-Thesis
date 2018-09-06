@@ -7,7 +7,7 @@ import java.util.*;
 import peasy.*; 
 
 
-public class processing extends PApplet {
+public class cellBase extends PApplet {
 
 /**
  * Cell Growth Simulation
@@ -1877,7 +1877,7 @@ public ArrayList<Vec3D> ImportPoints(String fileName){
  
 
   static public void main(String[] passedArgs) {
-    String[] appletArgs = new String[] { "processing" };
+    String[] appletArgs = new String[] { "cellBase" };
     if (passedArgs != null) {
       PApplet.main(concat(appletArgs, passedArgs));
     } else {

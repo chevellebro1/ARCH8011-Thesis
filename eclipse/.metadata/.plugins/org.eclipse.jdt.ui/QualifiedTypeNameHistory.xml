@@ -11,4 +11,5 @@
     <fullyQualifiedTypeName name="java.io.PrintWriter"/>
     <fullyQualifiedTypeName name="java.util.ArrayList"/>
     <fullyQualifiedTypeName name="Agent.cellAgent"/>
+    <fullyQualifiedTypeName name="cellBase.Agent"/>
 </qualifiedTypeNameHistroy>

@@ -53,6 +53,9 @@ boolean loaded = false;
 ArrayList<Agent> agents = new ArrayList<Agent>();
 ArrayList<Agent> agentsNew = new ArrayList<Agent>();
 ArrayList<Attractor> attractors = new ArrayList<Attractor>();
+
+ArrayList<Attractor> surface = new ArrayList<Attractor>();
+
 Voxelgrid voxelgrid = new Voxelgrid(1, new float[]{3,3,3});// voxelType: 0: reactangular; 1: pyramid; 2: triangular
 boolean componentsInPlane = true;//the components are either placed within the plane of the agents, or orthogonal to it
 boolean componentsAligned = false;//places all components in the X direction. Overwrites componentsInPlane 
@@ -70,6 +73,9 @@ float _facPlanarize = 0.2f;// planarity force (0.2)
 float _facStrata = 0.0f;// strata force (0.03-0.04)
 float _facOrthogonal = 0.0f;// orthogonal force (0.05)
 float _facAttractors = 0.0f;// force towards attractors (0.05)
+
+float _facSurface = 1.0f;// force towards surface
+
 Vec3D _unary = new Vec3D(0.0f,0.0f,0.005f);// unary force (-0.005)
 float _facFollowMesh = 0.01f;// force towards meshes (+/-0.01-0.05)
 float _facVoxel = 0.0f;// force towards the closest voxel
@@ -143,6 +149,10 @@ public void loadFiles(){
   attractors.add(new Attractor(new Vec3D(0,0,-10), -1));
   attractors.add(new Attractor(new Vec3D(50,50,0), -0.5f, 50, new boolean[] {true,true,false}));
   attractors.add(new Attractor(new Vec3D(-50,-50,0), -1, 50, new boolean[] {true,true,false}));
+  
+  surface.add(new Attractor(new Vec3D(0,0,0), new Vec3D(0.0f,0.0f,0.1f)));
+  
+  
   // Create attractors from text file
   for(Vec3D pos : ImportPoints(fileAttractor)) attractors.add(new Attractor(pos,1,70));
   for(Vec3D pos : ImportPoints(fileRepeller)) attractors.add(new Attractor(pos,-1,70));
@@ -195,6 +205,9 @@ class Agent extends Vec3D{
   ArrayList<Agent> neighborsClose = new ArrayList<Agent>();// neighbors
   ArrayList<Agent> neighborsFar = new ArrayList<Agent>();// neighbors
   ArrayList<Float> distances = new ArrayList<Float>();// distances to neighbors
+  
+  ArrayList<Attractor> surf = new ArrayList<Attractor>(); //attractor as plane
+  
   Agent agentClosest;//the closest Agent, required if no agent is a neighbor within range
   int countClose=0;// amount of close neighbors
   int index;
@@ -225,6 +238,7 @@ class Agent extends Vec3D{
   float offsetDivision = _offsetDivision;
   float facVelChild = _facVelChild;
   float facVelParent = _facVelParent;
+  float facSurface = _facSurface;
 
 
 
@@ -257,10 +271,13 @@ class Agent extends Vec3D{
     acc.addSelf(forceAttractors(atts, facAttractors));// force towards attractors
     acc.addSelf(planarize(facPlanarize));// pull each cell onto a plane
     acc.addSelf(forceStrata(facStrata));// pull each cell into parallel planes
-    acc.addSelf(forceOrthogonal(facOrthogonal));// pull each cell into orthogonal planes
+    acc.addSelf(forceOrthogonal(facOrthogonal));// pull each cell into orthogonal planesortho
+    
     acc.addSelf(unary);// unary force
     //acc.addSelf(followMesh(facFollowMesh));// pull towards the mesh
     acc.addSelf(forceVoxel(facVoxel));// pull towards the closest voxel
+    
+    acc.addSelf(surfaceAttractor(surf,facSurface));//pull towards surface
     
     //CONSTRAIN POSITION
     //bounce(0.0);
@@ -577,7 +594,22 @@ class Agent extends Vec3D{
     }
   }
  
-
+  public Vec3D surfaceAttractor(ArrayList<Attractor> attractors, float strength) {
+	  Vec3D vec = new Vec3D();
+	   for(Attractor a : attractors){
+	     Vec3D vecAtt;
+	     Vec3D pos = new Vec3D(a);
+	     if(a.activeDir[0]==false) pos.x=this.x;
+	     if(a.activeDir[1]==false) pos.y=this.y;
+	     if(a.activeDir[2]==false) pos.z=this.z;
+	     if(a.radius == 0) vecAtt = forcePoint(pos, a.strength);
+	     else if(a.exponent==0) vecAtt = forcePoint(pos, a.strength, a.radius);
+	     else vecAtt = forcePoint(pos, a.strength, a.radius, a.exponent);
+	     vec.addSelf(vecAtt);
+	   }
+	  vec.scaleSelf(strength);
+	  return vec;  
+	 }
   
   // STAY WITHIN THE ENVIRONMENT BOX
   public void bounce(float strength){
@@ -782,6 +814,13 @@ class Attractor extends Vec3D{
     if (strength>0) col = new int[] {0,255,100};
     else col = new int[] {0,100,255};
   }
+  
+  Attractor(Vec3D _pos, ReadonlyVec3D _norm) {
+	  super(_pos);
+	  _norm = new Vec3D(0.0f,0.0f,0.2f);
+  }
+  
+  
 
   // DISPLAY FUNCTION
   public void display(){
@@ -1718,6 +1757,7 @@ public synchronized void draw(){
   
     //ATTRACTORS
     if(showAttractors) for(Attractor a : attractors) a.display();
+    //if(showAttractors) for(Attractor s : surface) s.display();
     
     //MESH
     if(showMesh) meshFollow.display(false,true,false);//show vertices, show edges, show faces

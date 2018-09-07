@@ -31,7 +31,7 @@ public class Agent extends Vec3D {
 	// PARAMETERS
 	  Vec3D vel; // velocity = speed and direction the agent is travelling
 	  Vec3D acc;//acceleration
-	  ArrayList<cellBase.Attractor> atts = new ArrayList<cellBase.Attractor>(); //attractors the agent reacts to
+	  ArrayList<Attractor> atts = new ArrayList<Attractor>(); //attractors the agent reacts to
 	  ArrayList<Agent> neighbors = new ArrayList<Agent>();// neighbors
 	  ArrayList<Agent> neighborsClose = new ArrayList<Agent>();// neighbors
 	  ArrayList<Agent> neighborsFar = new ArrayList<Agent>();// neighbors
@@ -72,9 +72,9 @@ public class Agent extends Vec3D {
 	  float _facVelChild = ex._facVelChild;
 	  float _facVelParent = ex._facVelParent;
 	  float _rangeClose = ex._rangeClose;
-	  ArrayList<cellBase.Agent> agents;
-	  ArrayList<cellBase.Attractor> attractors;
-	  ArrayList<cellBase.Agent> agentsNew; 
+	  ArrayList<Agent> agents;
+	  ArrayList<Attractor> attractors;
+	  ArrayList<Agent> agentsNew; 
 	  
 	  
 	  
@@ -107,12 +107,63 @@ public class Agent extends Vec3D {
 	    super(_pos);
 	    vel = _vel;
 	    acc = new Vec3D();
-	    index = agents.size();
+	    //index = agents.size();
 	    age = 0;
 	    atts = attractors;
 	    normal = new Vec3D();
 	  }
 	  
+	  
+	  
+	  // FIND THE CLOSEST NEIGHBORS
+	  public void findNeighbors() {
+	    ArrayList<Agent> agentsSorted = new ArrayList<Agent>();
+	    // construct list of neighbors to be evaluated
+	    if (parent.frameCount%200==0 || neighbors.size()<4){  
+	      agentsSorted = new ArrayList<Agent>(agents);// sorted agents, aSorted.get(0) will be "this"
+	    }else{
+	      Set<Agent> agentSet = new HashSet<Agent>(neighbors);
+	      for(Agent n : neighbors) {
+	        for(Agent nn : n.neighbors) {
+	          agentSet.add(nn);
+	          if(parent.frameCount%20==0){
+	            for(Agent nnn : nn.neighbors){
+	              agentSet.add(nnn);
+	            }
+	          }
+	        }
+	      }
+	      agentsSorted = new ArrayList<Agent>(agentSet);
+	    }
+	    // reset agent variables
+	    neighbors.clear();
+	    neighborsClose.clear();
+	    neighborsFar.clear();
+	    distances.clear();
+	    countClose=0;
+	    // sort list by distances
+	    final Vec3D thisPos = new Vec3D(this);
+	    Collections.sort(agentsSorted, new Comparator<Agent>() {
+	        @Override
+	        public int compare(Agent a, Agent b){ return Float.compare((Float) a.distanceToSquared(thisPos),(Float) b.distanceToSquared(thisPos));}
+	    });
+	    agentsSorted.remove(0);//remove self from the list
+	    agentClosest = agentsSorted.get(0);//the closest agent, even if it is outside of the range for neighbors
+	    if(agentsSorted.size()>_maxNeighbors) agentsSorted = new ArrayList<Agent>(agentsSorted.subList(0,_maxNeighbors));
+	    //Distances
+	    for(Agent neighbor : agentsSorted){
+	      float dist = this.distanceTo(neighbor);
+	      if(dist<range){
+	        neighbors.add(neighbor);
+	        if(dist<_rangeClose){
+	          neighborsClose.add(neighbor);
+	          countClose+=1;
+	        }
+	        else neighborsFar.add(neighbor);
+	        distances.add(dist);
+	      }else break;
+	    }
+	  }
 	  
 	  
 	  // BEHAVIORS
@@ -175,58 +226,6 @@ public class Agent extends Vec3D {
 	  
 	  
 	  
-	  // FIND THE CLOSEST NEIGHBORS
-	  public void findNeighbors(){
-	    ArrayList<Agent> agentsSorted = new ArrayList<Agent>();
-	    // construct list of neighbors to be evaluated
-	    if (parent.frameCount%200==0 || neighbors.size()<4){  
-	      agentsSorted = new ArrayList<Agent>(agents);// sorted agents, aSorted.get(0) will be "this"
-	    }else{
-	      Set<Agent> agentSet = new HashSet<Agent>(neighbors);
-	      for(Agent n : neighbors) {
-	        for(Agent nn : n.neighbors) {
-	          agentSet.add(nn);
-	          if(parent.frameCount%20==0){
-	            for(Agent nnn : nn.neighbors){
-	              agentSet.add(nnn);
-	            }
-	          }
-	        }
-	      }
-	      agentsSorted = new ArrayList<Agent>(agentSet);
-	    }
-	    // reset agent variables
-	    neighbors.clear();
-	    neighborsClose.clear();
-	    neighborsFar.clear();
-	    distances.clear();
-	    countClose=0;
-	    // sort list by distances
-	    final Vec3D thisPos = new Vec3D(this);
-	    Collections.sort(agentsSorted, new Comparator<Agent>() {
-	        @Override
-	        public int compare(Agent a, Agent b){ return Float.compare((Float) a.distanceToSquared(thisPos),(Float) b.distanceToSquared(thisPos));}
-	    });
-	    agentsSorted.remove(0);//remove self from the list
-	    agentClosest = agentsSorted.get(0);//the closest agent, even if it is outside of the range for neighbors
-	    if(agentsSorted.size()>_maxNeighbors) agentsSorted = new ArrayList<Agent>(agentsSorted.subList(0,_maxNeighbors));
-	    //Distances
-	    for(Agent neighbor : agentsSorted){
-	      float dist = this.distanceTo(neighbor);
-	      if(dist<range){
-	        neighbors.add(neighbor);
-	        if(dist<_rangeClose){
-	          neighborsClose.add(neighbor);
-	          countClose+=1;
-	        }
-	        else neighborsFar.add(neighbor);
-	        distances.add(dist);
-	      }else break;
-	    }
-	  }
-	  
-	  
-	  
 	  //find the midpoint between the agent and another agent
 	  public Vec3D mid(Object obj){
 	    Vec3D pos2 = (Vec3D) obj;
@@ -277,7 +276,7 @@ public class Agent extends Vec3D {
 	  //POINT FORCE, exponent defines the strength per distance. radius is the distance at which the strength is 1*strength.
 	  public Vec3D forcePoint(Vec3D target, float strength, float radius, float exponent) {
 	    Vec3D vec = target.sub(this);  //vector from the target to the agent
-	    float factor = 1/pow(vec.magnitude()/radius,exponent);
+	    float factor = (float) (1/Math.pow(vec.magnitude()/radius,exponent));
 	    return vec.normalize().scale(strength*factor);
 	  }
 	  
@@ -312,7 +311,7 @@ public class Agent extends Vec3D {
 	    Vec3D vec = new Vec3D();
 	    for(Vec3D target : targets){
 	      Vec3D vecAdd = target.sub(this);  //vector from the target to the agent
-	      float factor = 1/pow(vecAdd.magnitude()/radius,exponent);
+	      float factor = (float) (1/Math.pow(vecAdd.magnitude()/radius,exponent));
 	      vecAdd.normalize().scaleSelf(strength*factor);
 	      vec.addSelf(vecAdd);
 	    }
@@ -346,9 +345,9 @@ public class Agent extends Vec3D {
 	  
 	  
 	  //ATTRACTORS
-	  public Vec3D forceAttractors(ArrayList<cellBase.Attractor> atts2, float strength){
+	  public Vec3D forceAttractors(ArrayList<Attractor> atts2, float strength){
 	    Vec3D vec = new Vec3D();
-	    for(cellBase.Attractor a : atts2){
+	    for(Attractor a : atts2){
 	      Vec3D vecAtt;
 	      Vec3D pos = new Vec3D(a);
 	      if(a.activeDir[0]==false) pos.x=this.x;
@@ -409,7 +408,7 @@ public class Agent extends Vec3D {
 	  
 	  //VOXEL FORCE
 	  public Vec3D forceVoxel(float strength){
-	    Vec3D vec = this.sub(voxelgrid.voxelize(this));
+	    Vec3D vec = this.sub(cellBase.voxelgrid.voxelize(this));
 	    vec.scaleSelf(strength);
 	    return vec;
 	  }
@@ -418,7 +417,7 @@ public class Agent extends Vec3D {
 	  //MESH FOLLOW
 	  public Vec3D followMesh(float strength) {
 	    if(strength==0.0f) return new Vec3D();
-	    Vertex cv = meshFollow.getClosestVertex(this);//closest vertex
+	    Vertex cv = cellBase.meshFollow.getClosestVertex(this);//closest vertex
 	    Vertex cv2 = null;// the second closest vertex among cv's neighbors
 	    for(Vertex x:cv.vertices) cv2=(cv2==null||x.distanceToSquared(this)<cv2.distanceToSquared(this))?x:cv2;
 	    //check how many faces the common edge has, if it is an open edge
@@ -455,28 +454,28 @@ public class Agent extends Vec3D {
 	  
 	  // STAY WITHIN THE ENVIRONMENT BOX
 	  public void bounce(float strength){
-	    if(x < envSize.get(0).x){
-	      x = envSize.get(0).x;
+	    if(x < cellBase.envSize.get(0).x){
+	      x = cellBase.envSize.get(0).x;
 	      vel.x *= -strength;
 	    }
-	    if(x > envSize.get(1).x){
-	      x = envSize.get(1).x;
+	    if(x > cellBase.envSize.get(1).x){
+	      x = cellBase.envSize.get(1).x;
 	      vel.x *= -strength;
 	    }
-	    if(y < envSize.get(0).y){
-	      y = envSize.get(0).y;
+	    if(y < cellBase.envSize.get(0).y){
+	      y = cellBase.envSize.get(0).y;
 	      vel.y *= -strength;
 	    }
-	    if(y > envSize.get(1).y){
-	      y = envSize.get(1).y;
+	    if(y > cellBase.envSize.get(1).y){
+	      y = cellBase.envSize.get(1).y;
 	      vel.y *= -strength;
 	    }
-	    if(z < envSize.get(0).z){
-	      z = envSize.get(0).z;
+	    if(z < cellBase.envSize.get(0).z){
+	      z = cellBase.envSize.get(0).z;
 	      vel.z *= -strength;
 	    }
-	    if(z > envSize.get(1).z){
-	      z = envSize.get(1).z;
+	    if(z > cellBase.envSize.get(1).z){
+	      z = cellBase.envSize.get(1).z;
 	      vel.z *= -strength;
 	    }
 	  }
@@ -485,11 +484,11 @@ public class Agent extends Vec3D {
 	  
 	  // DISPLAY
 	  public void display(){
-	    parent.stroke(col[0],col[1],col[2]);
-	    parent.strokeWeight(3);
+	    //parent.stroke(col[0],col[1],col[2]);
+	    //parent.strokeWeight(3);
 	    Vec3D p0 = new Vec3D(this);
-	    if(voxelize) p0 = voxelgrid.voxelize(p0);
-	    parent.point(p0.x, p0.y, p0.z);
+	    if(cellBase.voxelize) p0 = cellBase.voxelgrid.voxelize(p0);
+	    //parent.point(p0.x, p0.y, p0.z);
 	  }
 	  
 	  // DISPLAY EDGES
@@ -500,9 +499,9 @@ public class Agent extends Vec3D {
 	      if(agents.indexOf(this)<agents.indexOf(n)){
 	        Vec3D p0 = new Vec3D(this);
 	        Vec3D p1 = new Vec3D(n);
-	        if(voxelize){
-	          p0 = voxelgrid.voxelize(p0);
-	          p1 = voxelgrid.voxelize(p1);
+	        if(cellBase.voxelize){
+	          p0 = cellBase.voxelgrid.voxelize(p0);
+	          p1 = cellBase.voxelgrid.voxelize(p1);
 	        }
 	        parent.line(p0.x, p0.y, p0.z, p1.x, p1.y, p1.z);
 	      }
@@ -520,10 +519,10 @@ public class Agent extends Vec3D {
 	            Vec3D p0 = new Vec3D(this);
 	            Vec3D p1 = new Vec3D(n1);
 	            Vec3D p2 = new Vec3D(n2);
-	            if(voxelize){
-	              p0 = voxelgrid.voxelize(p0);
-	              p1 = voxelgrid.voxelize(p1);
-	              p2 = voxelgrid.voxelize(p2);
+	            if(cellBase.voxelize){
+	              p0 = cellBase.voxelgrid.voxelize(p0);
+	              p1 = cellBase.voxelgrid.voxelize(p1);
+	              p2 = cellBase.voxelgrid.voxelize(p2);
 	            }
 	            parent.beginShape();
 	            parent.vertex(p0.x,p0.y,p0.z);
@@ -541,11 +540,11 @@ public class Agent extends Vec3D {
 	                  Vec3D p1 = new Vec3D(n1);
 	                  Vec3D p2 = new Vec3D(n2);
 	                  Vec3D p3 = new Vec3D(n3);
-	                  if(voxelize){
-	                    p0 = voxelgrid.voxelize(p0);
-	                    p1 = voxelgrid.voxelize(p1);
-	                    p2 = voxelgrid.voxelize(p2);
-	                    p3 = voxelgrid.voxelize(p3);
+	                  if(cellBase.voxelize){
+	                    p0 = cellBase.voxelgrid.voxelize(p0);
+	                    p1 = cellBase.voxelgrid.voxelize(p1);
+	                    p2 = cellBase.voxelgrid.voxelize(p2);
+	                    p3 = cellBase.voxelgrid.voxelize(p3);
 	                  }
 	                  parent.beginShape();
 	                  parent.vertex(p0.x,p0.y,p0.z);

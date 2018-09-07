@@ -47,15 +47,15 @@ public class cellBase extends PApplet {
 
 // VARIABLES
 PeasyCam cam;
-ArrayList<Vec3D> envSize = new ArrayList<Vec3D>(Arrays.asList(new Vec3D(-1000,-1000,0),new Vec3D(1000,1000,1000)));
+static ArrayList<Vec3D> envSize = new ArrayList<Vec3D>(Arrays.asList(new Vec3D(-1000,-1000,0),new Vec3D(1000,1000,1000)));
 Vec3D center;
 boolean loaded = false;
-ArrayList<Agent> agents = new ArrayList<Agent>();
-ArrayList<Agent> agentsNew = new ArrayList<Agent>();
-ArrayList<Attractor> attractors = new ArrayList<Attractor>();
-Voxelgrid voxelgrid = new Voxelgrid(1, new float[]{3,3,3});// voxelType: 0: reactangular; 1: pyramid; 2: triangular
-boolean componentsInPlane = true;//the components are either placed within the plane of the agents, or orthogonal to it
-boolean componentsAligned = false;//places all components in the X direction. Overwrites componentsInPlane 
+static ArrayList<Agent> agents = new ArrayList<Agent>();
+static ArrayList<Agent> agentsNew = new ArrayList<Agent>();
+static ArrayList<Attractor> attractors = new ArrayList<Attractor>();
+public static Voxelgrid voxelgrid = new Voxelgrid(1, new float[]{3,3,3});// voxelType: 0: reactangular; 1: pyramid; 2: triangular
+static boolean componentsInPlane = true;//the components are either placed within the plane of the agents, or orthogonal to it
+static boolean componentsAligned = false;//places all components in the X direction. Overwrites componentsInPlane 
 
 // GENERIC AGENT SETTINGS (Can be overridden in the Agent's constructor for separate groups of Agents.)
 int[] _col = new int[] {0,0,0};// color of the agent
@@ -88,7 +88,7 @@ String fileRepeller= "input/Repeller.txt"; //"input/Repeller.txt"
 ToxiclibsSupport gfx;
 Mesh meshStart01;
 Mesh meshStart02;
-Mesh meshFollow;
+static Mesh meshFollow;
 
 // DATE FOR IMAGE SAVING
 Date date = new Date();
@@ -107,7 +107,7 @@ boolean showNormals = false;
 boolean showAttractors = false;
 boolean showEdges = false;
 boolean showFaces = false;
-boolean voxelize = false;
+static boolean voxelize = false;
 boolean showVoxels = false;
 boolean showComponents = false;
 
@@ -119,6 +119,8 @@ public void setup() {
   cam.setRotations(-1.57f,-1.57f,0.0f);//left view
   //perspective(PI/3.0, width/height, 0.001,100000);
   //hint(DISABLE_DEPTH_TEST);
+  
+  frameRate(30);
   
   thread("loadFiles");
 }
@@ -133,7 +135,7 @@ public void loadFiles(){
   // MESHES
   gfx = new ToxiclibsSupport(this);
   // Meshes
-  meshFollow = new Mesh("MeshFollow.ply");
+  //meshFollow = new Mesh("MeshFollow.ply");
   //envSize = meshFollow.boundingBox();
   center = envSize.get(0).add(envSize.get(1)).scale(0.5f);
   
@@ -197,7 +199,7 @@ public synchronized void draw(){
     
     if (run==true){
       //for(Agent a:agents) a.findNeighbors();
-      for(Agent a:agents) a.move();
+      //for(Agent a:agents) a.move();
       for(Agent a:agents) a.update();
       agents.addAll(agentsNew); agentsNew.clear();
     }

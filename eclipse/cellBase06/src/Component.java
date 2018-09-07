@@ -29,9 +29,9 @@ public class Component {
 	  // CONSTRUCTOR
 	  Component(Voxelgrid _voxelgrid, Agent a){
 	    voxelgrid = _voxelgrid;
-	    if(parent.abs(a.normal.x)>parent.abs(a.normal.y) ^ componentsInPlane) dir = new Vec3D(voxelgrid.voxelSize[0]*0.5f,0,0);
+	    if(parent.abs(a.normal.x)>parent.abs(a.normal.y) ^ cellBase.componentsInPlane) dir = new Vec3D(voxelgrid.voxelSize[0]*0.5f,0,0);
 	    else dir = new Vec3D(0,voxelgrid.voxelSize[1]*0.5f,0);
-	    if(componentsAligned) dir = new Vec3D(voxelgrid.voxelSize[0]*0.5f,0,0);//all components are aligned in x direction
+	    if(cellBase.componentsAligned) dir = new Vec3D(voxelgrid.voxelSize[0]*0.5f,0,0);//all components are aligned in x direction
 	    placeComponent(a);
 	    if(voxels.size()==8){
 	      //keep component

@@ -178,7 +178,7 @@ public class Mesh {
 	        parent.popMatrix();
 	        
 	        Vec3D p0 = e.vertices.get(0);
-	        float colorValue = meshFollow.getClosestVertex(p0).colValue;
+	        float colorValue = cellBase.meshFollow.getClosestVertex(p0).colValue;
 	        Vec3D vec2 = new Vec3D(10,20,colorValue*20);
 	        vec2.scaleSelf(diameter);
 	        Vec3D p2 = p0.add(vec2);

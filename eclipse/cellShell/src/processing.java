@@ -53,7 +53,6 @@ boolean loaded = false;
 ArrayList<Agent> agents = new ArrayList<Agent>();
 ArrayList<Agent> agentsNew = new ArrayList<Agent>();
 ArrayList<Attractor> attractors = new ArrayList<Attractor>();
-ArrayList<Attractor> surface = new ArrayList<Attractor>();
 Voxelgrid voxelgrid = new Voxelgrid(1, new float[]{3,3,3});// voxelType: 0: reactangular; 1: pyramid; 2: triangular
 boolean componentsInPlane = true;//the components are either placed within the plane of the agents, or orthogonal to it
 boolean componentsAligned = false;//places all components in the X direction. Overwrites componentsInPlane 
@@ -67,11 +66,11 @@ float _drag = 0.5f;// drag coefficient (0.5)
 float _facNeighborsClose = -0.7f;// attraction/repulsion to close neighbors
 float _facNeighborsClosest = -0.15f;// attraction/repulsion to closest neighbor
 float _facNeighborsFar = 0.0f;// attraction/repulsion to far neighbors
-float _facPlanarize = 0.8f;// planarity force (0.2)
+float _facPlanarize = 0.2f;// planarity force (0.2)
 float _facStrata = 0.0f;// strata force (0.03-0.04)
 float _facOrthogonal = 0.0f;// orthogonal force (0.05)
 float _facAttractors = 0.0f;// force towards attractors (0.05)
-Vec3D _unary = new Vec3D(0.0f,0.0f,-0.1f);// unary force (-0.005)
+Vec3D _unary = new Vec3D(0.0f,0.0f,0.005f);// unary force (-0.005)
 float _facFollowMesh = 0.01f;// force towards meshes (+/-0.01-0.05)
 float _facVoxel = 0.0f;// force towards the closest voxel
 int _minAge = 10;// minimum age for cell division (a larger number (10) inhibits the growth of tentacles)
@@ -144,10 +143,6 @@ public void loadFiles(){
   attractors.add(new Attractor(new Vec3D(0,0,-10), -1));
   attractors.add(new Attractor(new Vec3D(50,50,0), -0.5f, 50, new boolean[] {true,true,false}));
   attractors.add(new Attractor(new Vec3D(-50,-50,0), -1, 50, new boolean[] {true,true,false}));
-  
-  surface.add(new Attractor(new Vec3D(0,0,0), -1));
-  
-  
   // Create attractors from text file
   for(Vec3D pos : ImportPoints(fileAttractor)) attractors.add(new Attractor(pos,1,70));
   for(Vec3D pos : ImportPoints(fileRepeller)) attractors.add(new Attractor(pos,-1,70));
@@ -507,24 +502,6 @@ class Agent extends Vec3D{
     return vec;
   }
   
-  
-  //ATTRACTORS
-  public Vec3D surfaceAttractor(ArrayList<Attractor> attractors, float strength){
-    Vec3D vec = new Vec3D();
-    for(Attractor a : attractors){
-      Vec3D vecAtt;
-      Vec3D pos = new Vec3D(a);
-      if(a.activeDir[0]==false) pos.x=this.x;
-      if(a.activeDir[1]==false) pos.y=this.y;
-      if(a.activeDir[2]==false) pos.z=this.z;
-      if(a.radius == 0) vecAtt = forcePoint(pos, a.strength);
-      else if(a.exponent==0) vecAtt = forcePoint(pos, a.strength, a.radius);
-      else vecAtt = forcePoint(pos, a.strength, a.radius, a.exponent);
-      vec.addSelf(vecAtt);
-   }
-   vec.scaleSelf(strength);
-   return vec;  
-  }
   
   
   //STRATA FORCE

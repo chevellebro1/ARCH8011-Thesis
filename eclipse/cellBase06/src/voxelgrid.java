@@ -2,7 +2,7 @@ import java.util.ArrayList;
 
 import toxi.geom.Vec3D;
 
-public class voxelgrid {
+public class Voxelgrid {
 	
 	  // currently set up only for pyramid grid voxels
 	  
@@ -57,7 +57,7 @@ public class voxelgrid {
 	    // rebuilds the solid voxels from scratch
 	    //voxels.clear();
 	    //centersVoxel.clear();
-	    for(Agent a : agents) addAgent(a);
+	    for(Agent a : cellBase.agents) addAgent(a);
 	  }
 	  
 	  public void addPoint(Vec3D p){
@@ -104,12 +104,12 @@ public class voxelgrid {
 	    // rebuilds the solid component from scratch
 	    components.clear();
 	    centersComponent.clear();
-	    for(Agent a : agents) new Component(this, a);
+	    for(Agent a : cellBase.agents) new Component(this, a);
 	  }
 	  
 	  public void buildComponents(){
 	    // adjusts the solid component if agents have moved
-	    for(Agent a : agents) buildComponent(a);
+	    for(Agent a : cellBase.agents) buildComponent(a);
 	  }
 	  
 	  public void buildComponent(Agent a){

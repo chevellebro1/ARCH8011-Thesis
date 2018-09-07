@@ -53,9 +53,6 @@ boolean loaded = false;
 ArrayList<Agent> agents = new ArrayList<Agent>();
 ArrayList<Agent> agentsNew = new ArrayList<Agent>();
 ArrayList<Attractor> attractors = new ArrayList<Attractor>();
-
-ArrayList<Attractor> surface = new ArrayList<Attractor>();
-
 Voxelgrid voxelgrid = new Voxelgrid(1, new float[]{3,3,3});// voxelType: 0: reactangular; 1: pyramid; 2: triangular
 boolean componentsInPlane = true;//the components are either placed within the plane of the agents, or orthogonal to it
 boolean componentsAligned = false;//places all components in the X direction. Overwrites componentsInPlane 
@@ -73,7 +70,7 @@ float _facPlanarize = 0.2f;// planarity force (0.2)
 float _facStrata = 0.0f;// strata force (0.03-0.04)
 float _facOrthogonal = 0.0f;// orthogonal force (0.05)
 float _facAttractors = 0.0f;// force towards attractors (0.05)
-Vec3D _unary = new Vec3D(0.0f,0.0f,0.01f);// unary force (-0.005)
+Vec3D _unary = new Vec3D(0.0f,0.0f,0.005f);// unary force (-0.005)
 float _facFollowMesh = 0.01f;// force towards meshes (+/-0.01-0.05)
 float _facVoxel = 0.0f;// force towards the closest voxel
 int _minAge = 10;// minimum age for cell division (a larger number (10) inhibits the growth of tentacles)
@@ -82,7 +79,6 @@ float _rangeDivide = 3.5f;// maximum average distance after which the division i
 float _offsetDivision = 0.1f;// random offset of the child cell from the parent cell (0.1)
 float _facVelChild = 0.0f;// scale factor for child velocity after cell division (a negative value inhibits the growth of tentacles)
 float _facVelParent = -1.0f;// scale factor for parent velocity after cell division (a negative value inhibits the growth of tentacles)
-float _facSurface = 0.05f;//pull to surface
 
 // ATTRACTOR AND REPELLER
 String fileAttractor= "input/Attractor.txt";//"input/Attractor.txt"
@@ -147,10 +143,6 @@ public void loadFiles(){
   attractors.add(new Attractor(new Vec3D(0,0,-10), -1));
   attractors.add(new Attractor(new Vec3D(50,50,0), -0.5f, 50, new boolean[] {true,true,false}));
   attractors.add(new Attractor(new Vec3D(-50,-50,0), -1, 50, new boolean[] {true,true,false}));
-  
-  surface.add(new Attractor(new Vec3D(0,0,0), new Vec3D(0.0f,0.0f,10f))); //pull surface
-  
-  
   // Create attractors from text file
   for(Vec3D pos : ImportPoints(fileAttractor)) attractors.add(new Attractor(pos,1,70));
   for(Vec3D pos : ImportPoints(fileRepeller)) attractors.add(new Attractor(pos,-1,70));
@@ -199,9 +191,6 @@ class Agent extends Vec3D{
   Vec3D vel; // velocity = speed and direction the agent is travelling
   Vec3D acc;//acceleration
   ArrayList<Attractor> atts = new ArrayList<Attractor>(); //attractors the agent reacts to
-  
-  ArrayList<Attractor> surf = new ArrayList<Attractor>(); //attractor surface
-  
   ArrayList<Agent> neighbors = new ArrayList<Agent>();// neighbors
   ArrayList<Agent> neighborsClose = new ArrayList<Agent>();// neighbors
   ArrayList<Agent> neighborsFar = new ArrayList<Agent>();// neighbors
@@ -236,7 +225,6 @@ class Agent extends Vec3D{
   float offsetDivision = _offsetDivision;
   float facVelChild = _facVelChild;
   float facVelParent = _facVelParent;
-  float facSurface = _facSurface;
 
 
 
@@ -248,7 +236,6 @@ class Agent extends Vec3D{
     index = agents.size();
     age = 0;
     atts = attractors;
-    surf = surface;
     normal = new Vec3D();
   }
   
@@ -275,8 +262,6 @@ class Agent extends Vec3D{
     //acc.addSelf(followMesh(facFollowMesh));// pull towards the mesh
     acc.addSelf(forceVoxel(facVoxel));// pull towards the closest voxel
     
-    acc.addSelf(surfaceAttractors(surf, facSurface)); //pull to surface
-    
     //CONSTRAIN POSITION
     //bounce(0.0);
     
@@ -294,7 +279,7 @@ class Agent extends Vec3D{
           posNew.addSelf(new Vec3D(random(-offsetDivision,offsetDivision),random(-offsetDivision,offsetDivision),random(-offsetDivision,offsetDivision)));//random offset within a range
           Vec3D velNew = vel.scale(facVelChild);// velocity of the child cell
           Agent agentNew = new Agent(posNew, velNew);
-          agentNew.neighbors = new ArrayList<Agent>(neighbors);
+          agentNew.neighbors = new ArrayList(neighbors);
           agentNew.neighbors.add(this);
           neighbors.add(agentNew);
           agentsNew.add(agentNew);
@@ -365,6 +350,7 @@ class Agent extends Vec3D{
       }else break;
     }
   }
+  
   
   
   //find the midpoint between the agent and another agent
@@ -501,24 +487,6 @@ class Agent extends Vec3D{
    }
    vec.scaleSelf(strength);
    return vec;  
-  }
-  
-  
-  public Vec3D surfaceAttractors(ArrayList<Attractor> surface, float strength) {
-	  Vec3D vec = new Vec3D();
-	  for(Attractor s : surface) {
-		  Vec3D vecSur;
-		  Vec3D pos = new Vec3D(s);
-		  if(s.activeDir[0]==false) pos.x=this.x;
-		  if(s.activeDir[1]==false) pos.y=this.y;
-		  if(s.activeDir[2]==false) pos.z=this.z;
-		  if(s.radius == 0) vecSur = forcePoint(pos, s.strength);
-		  else if(s.exponent==0) vecSur = forcePoint(pos, s.strength, s.radius);
-		  else vecSur = forcePoint(pos, s.strength, s.radius, s.exponent);
-		  vec.addSelf(vecSur);
-	  }
-	  vec.scaleSelf(strength);
-	  return vec;
   }
 
   
@@ -814,12 +782,6 @@ class Attractor extends Vec3D{
     if (strength>0) col = new int[] {0,255,100};
     else col = new int[] {0,100,255};
   }
-  
-  Attractor(Vec3D _pos, ReadonlyVec3D _norm) {
-	  super(_pos);
-	  _norm = new Vec3D(0.0f,0.0f,0.1f);
-  }
-  
 
   // DISPLAY FUNCTION
   public void display(){
@@ -1756,7 +1718,6 @@ public synchronized void draw(){
   
     //ATTRACTORS
     if(showAttractors) for(Attractor a : attractors) a.display();
-    if(showAttractors) for (Attractor s : surface) s.display();
     
     //MESH
     if(showMesh) meshFollow.display(false,true,false);//show vertices, show edges, show faces

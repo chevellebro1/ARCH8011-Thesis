@@ -203,6 +203,7 @@ class Agent extends Vec3D{
   int countClose=0;// amount of close neighbors
   int index;
   int age;
+  boolean pin;
   Vec3D normal;//the normal of the agent according to its neighbors
   Voxel voxel;// voxel of the agent for voxelization
   Component component;// component of the agent, for voxelization
@@ -239,6 +240,7 @@ class Agent extends Vec3D{
     acc = new Vec3D();
     index = agents.size();
     age = 0;
+    pin = false;
     atts = attractors;
     normal = new Vec3D();
   }

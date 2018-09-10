@@ -52,6 +52,9 @@ Vec3D center;
 boolean loaded = false;
 ArrayList<Agent> agents = new ArrayList<Agent>();
 ArrayList<Agent> agentsNew = new ArrayList<Agent>();
+
+ArrayList<Agent> pinned = new ArrayList<Agent>();
+
 ArrayList<Attractor> attractors = new ArrayList<Attractor>();
 Voxelgrid voxelgrid = new Voxelgrid(1, new float[]{3,3,3});// voxelType: 0: reactangular; 1: pyramid; 2: triangular
 boolean componentsInPlane = true;//the components are either placed within the plane of the agents, or orthogonal to it
@@ -1731,12 +1734,20 @@ public synchronized void draw(){
     }
     if(run){
       print("f:",frameCount," a:",agents.size());
+      
+      
+      print("agent:"); //display agent list
+      for(int i = 0; i < agents.size(); i++) { 
+    	  println(agents.get(i));
+      }
+      
+      
       if(showComponents) print(" c:",voxelgrid.components.size());
       println();
     }
-    
   }
 }
+
 /**
  * Cell Growth Simulation
  *

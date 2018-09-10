@@ -1,12 +1,4 @@
 INDEX VERSION 1.131+K:\University of Cincinnati\2019 Thesis Year\~github\ARCH8011-Thesis\eclipse\.metadata\.plugins\org.eclipse.jdt.core
-4199582967.index
-1991017105.index
-1134393913.index
-936371299.index
-1203436146.index
-2168011866.index
-643461837.index
 3996102163.index
-269301374.index
-2892672834.index
-870939323.index
+1991017105.index
+1942800645.index

@@ -52,6 +52,10 @@ Vec3D center;
 boolean loaded = false;
 ArrayList<Agent> agents = new ArrayList<Agent>();
 ArrayList<Agent> agentsNew = new ArrayList<Agent>();
+
+ArrayList<Agent> agentsV2 = new ArrayList<Agent>();
+ArrayList<Agent> agentsV2New = new ArrayList<Agent>();
+
 ArrayList<Attractor> attractors = new ArrayList<Attractor>();
 Voxelgrid voxelgrid = new Voxelgrid(1, new float[]{3,3,3});// voxelType: 0: reactangular; 1: pyramid; 2: triangular
 boolean componentsInPlane = true;//the components are either placed within the plane of the agents, or orthogonal to it
@@ -140,9 +144,10 @@ public void loadFiles(){
   center = envSize.get(0).add(envSize.get(1)).scale(0.5f);
   
   // ATTRACTORS 
-  attractors.add(new Attractor(new Vec3D(0,0,-10), -1));
-  attractors.add(new Attractor(new Vec3D(50,50,0), -0.5f, 50, new boolean[] {true,true,false}));
-  attractors.add(new Attractor(new Vec3D(-50,-50,0), -1, 50, new boolean[] {true,true,false}));
+  //attractors.add(new Attractor(new Vec3D(0,0,-10), -1));
+  //attractors.add(new Attractor(new Vec3D(50,50,0), -0.5f, 50, new boolean[] {true,true,false}));
+  //attractors.add(new Attractor(new Vec3D(5,5,0), 5.0f, 50, new boolean[] {true,true,false}));
+  //attractors.add(new Attractor(new Vec3D(-50,-50,0), -1, 50, new boolean[] {true,true,false}));
   // Create attractors from text file
   for(Vec3D pos : ImportPoints(fileAttractor)) attractors.add(new Attractor(pos,1,70));
   for(Vec3D pos : ImportPoints(fileRepeller)) attractors.add(new Attractor(pos,-1,70));
@@ -156,6 +161,15 @@ public void loadFiles(){
     Agent a = new Agent(pos, vel);
     agents.add(a);
   }
+  
+  randomSeed(0);
+  for(int i=0;i<10;i++){
+	    Vec3D pos = new Vec3D(random(-5.0f,5.0f), random(-5.0f,5.0f), random(0,5.0f));
+	    Vec3D vel = new Vec3D();
+	    //Vec3D vel = new Vec3D(random(-0.01,0.01), random(-0.01,0.01), random(-0.01,0.01));
+	    Agent a2 = new Agent(pos, vel);
+	    agentsV2.add(a2);
+	  }  
   
   println("agents ",agents.size(),", attractors ",attractors.size());
   
@@ -198,6 +212,7 @@ class Agent extends Vec3D{
   Agent agentClosest;//the closest Agent, required if no agent is a neighbor within range
   int countClose=0;// amount of close neighbors
   int index;
+  int index2;
   int age;
   Vec3D normal;//the normal of the agent according to its neighbors
   Voxel voxel;// voxel of the agent for voxelization
@@ -234,6 +249,7 @@ class Agent extends Vec3D{
     vel = _vel;
     acc = new Vec3D();
     index = agents.size();
+    index2 = agentsV2.size();
     age = 0;
     atts = attractors;
     normal = new Vec3D();
@@ -278,16 +294,39 @@ class Agent extends Vec3D{
           Vec3D posNew = this;// position of the child cell
           posNew.addSelf(new Vec3D(random(-offsetDivision,offsetDivision),random(-offsetDivision,offsetDivision),random(-offsetDivision,offsetDivision)));//random offset within a range
           Vec3D velNew = vel.scale(facVelChild);// velocity of the child cell
-          Agent agentNew = new Agent(posNew, velNew);
-          agentNew.neighbors = new ArrayList(neighbors);
-          agentNew.neighbors.add(this);
-          neighbors.add(agentNew);
-          agentsNew.add(agentNew);
+          Agent agentNewV2 = new Agent(posNew, velNew);
+          agentNewV2.neighbors = new ArrayList(neighbors);
+          agentNewV2.neighbors.add(this);
+          neighbors.add(agentNewV2);
+          agentNewV2.add(agentNewV2);
           vel.scaleSelf(facVelParent);// set the velocity of the parent cell
           age=0;// set the age of the parent cell to 0
         }
       }
     }
+    
+    if(age>minAge){
+        int count = Math.min(countDivide,distances.size());
+        if(count>0){
+          float distanceAverage=0;
+          for(int i=0;i<count;i++){
+            distanceAverage+=distances.get(i);
+          }
+          distanceAverage=distanceAverage/PApplet.parseFloat(count);
+          if(distanceAverage>rangeDivide){
+            Vec3D posNew = this;// position of the child cell
+            posNew.addSelf(new Vec3D(random(-offsetDivision,offsetDivision),random(-offsetDivision,offsetDivision),random(-offsetDivision,offsetDivision)));//random offset within a range
+            Vec3D velNew = vel.scale(facVelChild);// velocity of the child cell
+            Agent agentNew = new Agent(posNew, velNew);
+            agentNew.neighbors = new ArrayList(neighbors);
+            agentNew.neighbors.add(this);
+            neighbors.add(agentNew);
+            agentsNew.add(agentNew);
+            vel.scaleSelf(facVelParent);// set the velocity of the parent cell
+            age=0;// set the age of the parent cell to 0
+          }
+        }
+      }
   }
   
   public void update(){
@@ -321,6 +360,7 @@ class Agent extends Vec3D{
       }
       agentsSorted = new ArrayList<Agent>(agentSet);
     }
+    
     // reset agent variables
     neighbors.clear();
     neighborsClose.clear();
@@ -352,6 +392,58 @@ class Agent extends Vec3D{
   }
   
   
+  public void findNeighborsV2(){
+	    ArrayList<Agent> agentsSortedV2 = new ArrayList<Agent>();
+	    // construct list of neighbors to be evaluated
+	    if (frameCount%200==0 || neighbors.size()<4){  
+	      agentsSortedV2 = new ArrayList<Agent>(agentsV2);// sorted agents, aSorted.get(0) will be "this"
+	    }else{
+	      Set<Agent> agentSetV2 = new HashSet<Agent>(neighbors);
+	      for(Agent n : neighbors) {
+	        for(Agent nn : n.neighbors) {
+	          agentSetV2.add(nn);
+	          if(frameCount%20==0){
+	            for(Agent nnn : nn.neighbors){
+	              agentSetV2.add(nnn);
+	            }
+	          }
+	        }
+	      }
+	      agentsSortedV2 = new ArrayList<Agent>(agentSetV2);
+	    }
+	    
+	    // reset agent variables
+	    neighbors.clear();
+	    neighborsClose.clear();
+	    neighborsFar.clear();
+	    distances.clear();
+	    countClose=0;
+	    // sort list by distances
+	    final Vec3D thisPos = new Vec3D(this);
+	    Collections.sort(agentsSortedV2, new Comparator<Agent>() {
+	        @Override
+	        public int compare(Agent a, Agent b){ return Float.compare((Float) a.distanceToSquared(thisPos),(Float) b.distanceToSquared(thisPos));}
+	    });
+	    agentsSortedV2.remove(0);//remove self from the list
+	    agentClosest = agentsSortedV2.get(0);//the closest agent, even if it is outside of the range for neighbors
+	    if(agentsSortedV2.size()>_maxNeighbors) agentsSortedV2 = new ArrayList<Agent>(agentsSortedV2.subList(0,_maxNeighbors));
+	    //Distances
+	    for(Agent neighbor : agentsSortedV2){
+	      float dist = this.distanceTo(neighbor);
+	      if(dist<range){
+	        neighbors.add(neighbor);
+	        if(dist<_rangeClose){
+	          neighborsClose.add(neighbor);
+	          countClose+=1;
+	        }
+	        else neighborsFar.add(neighbor);
+	        distances.add(dist);
+	      }else break;
+	    }
+	  }  
+  
+  
+  
   
   //find the midpoint between the agent and another agent
   public Vec3D mid(Object obj){
@@ -377,6 +469,19 @@ class Agent extends Vec3D{
         neighbors2 = new ArrayList<Agent>(aSorted.subList(1,4));//item 0 will be this
       }
     }
+    if(neighbors2.size()<3){
+        if(agentsV2.size()<4){
+          println("planarize error",neighbors2.size(),agentsV2.size());//not enough agents in the scene
+        }else{
+          ArrayList<Agent> aSortedV2 = new ArrayList<Agent>(agentsV2);// sorted agents, aSorted.get(0) will be "this"
+          final Vec3D thisPos = new Vec3D(this);
+          Collections.sort(aSortedV2, new Comparator<Agent>() {
+              @Override
+              public int compare(Agent a2, Agent b){ return Float.compare((Float) a2.distanceToSquared(thisPos),(Float) b.distanceToSquared(thisPos));}
+          });
+          neighbors2 = new ArrayList<Agent>(aSortedV2.subList(1,4));//item 0 will be this
+        }
+      }    
     Vec3D e1 = neighbors2.get(1).sub(neighbors2.get(0));
     Vec3D e2 = neighbors2.get(2).sub(neighbors2.get(0));
     return e1.cross(e2).normalize();

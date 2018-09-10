@@ -52,10 +52,6 @@ Vec3D center;
 boolean loaded = false;
 ArrayList<Agent> agents = new ArrayList<Agent>();
 ArrayList<Agent> agentsNew = new ArrayList<Agent>();
-
-ArrayList<Agent> agents2 = new ArrayList<Agent>();
-ArrayList<Agent> agentsNew2 = new ArrayList<Agent>();
-
 ArrayList<Attractor> attractors = new ArrayList<Attractor>();
 Voxelgrid voxelgrid = new Voxelgrid(1, new float[]{3,3,3});// voxelType: 0: reactangular; 1: pyramid; 2: triangular
 boolean componentsInPlane = true;//the components are either placed within the plane of the agents, or orthogonal to it
@@ -74,7 +70,7 @@ float _facPlanarize = 0.2f;// planarity force (0.2)
 float _facStrata = 0.0f;// strata force (0.03-0.04)
 float _facOrthogonal = 0.0f;// orthogonal force (0.05)
 float _facAttractors = 0.0f;// force towards attractors (0.05)
-Vec3D _unary = new Vec3D(0.0f,0.0f,0.005f);// unary force (-0.005)
+Vec3D _unary = new Vec3D(0.0f,0.0f,0.1f);// unary force (-0.005)
 float _facFollowMesh = 0.01f;// force towards meshes (+/-0.01-0.05)
 float _facVoxel = 0.0f;// force towards the closest voxel
 int _minAge = 10;// minimum age for cell division (a larger number (10) inhibits the growth of tentacles)
@@ -149,8 +145,8 @@ public void loadFiles(){
   //attractors.add(new Attractor(new Vec3D(-50,-50,0), -1, 50, new boolean[] {true,true,false}));
   
   // Create attractors from text file
-  for(Vec3D pos : ImportPoints(fileAttractor)) attractors.add(new Attractor(pos,1,70));
-  for(Vec3D pos : ImportPoints(fileRepeller)) attractors.add(new Attractor(pos,-1,70));
+  //for(Vec3D pos : ImportPoints(fileAttractor)) attractors.add(new Attractor(pos,1,70));
+  //for(Vec3D pos : ImportPoints(fileRepeller)) attractors.add(new Attractor(pos,-1,70));
   
   // AGENTS
   randomSeed(0);
@@ -161,14 +157,6 @@ public void loadFiles(){
     Agent a = new Agent(pos, vel);
     agents.add(a);
   }
-  for(int i=0;i<10;i++){
-	    Vec3D pos = new Vec3D(random(-5.0f,5.0f), random(-5.0f,5.0f), random(0,5.0f));
-	    Vec3D vel = new Vec3D();
-	    //Vec3D vel = new Vec3D(random(-0.01,0.01), random(-0.01,0.01), random(-0.01,0.01));
-	    Agent a2 = new Agent(pos, vel);
-	    agents2.add(a2);
-	  }
-  
   
   println("agents ",agents.size(),", attractors ",attractors.size());
   
@@ -301,31 +289,6 @@ class Agent extends Vec3D{
         }
       }
     }
-    
-    if(age>minAge){
-        int count = Math.min(countDivide,distances.size());
-        if(count>0){
-          float distanceAverage=0;
-          for(int i=0;i<count;i++){
-            distanceAverage+=distances.get(i);
-          }
-          distanceAverage=distanceAverage/PApplet.parseFloat(count);
-          if(distanceAverage>rangeDivide){
-            Vec3D posNew = this;// position of the child cell
-            posNew.addSelf(new Vec3D(random(-offsetDivision,offsetDivision),random(-offsetDivision,offsetDivision),random(-offsetDivision,offsetDivision)));//random offset within a range
-            Vec3D velNew = vel.scale(facVelChild);// velocity of the child cell
-            Agent agentNew2 = new Agent(posNew, velNew);
-            agentNew2.neighbors = new ArrayList(neighbors);
-            agentNew2.neighbors.add(this);
-            neighbors.add(agentNew2);
-            agentsNew2.add(agentNew2);
-            vel.scaleSelf(facVelParent);// set the velocity of the parent cell
-            age=0;// set the age of the parent cell to 0
-          }
-        }
-      }   
-    
-    
   }
   
   public void update(){
@@ -1288,13 +1251,11 @@ class Voxelgrid{
     components.clear();
     centersComponent.clear();
     for(Agent a : agents) new Component(this, a);
-    for(Agent a2 : agents2) new Component(this, a2);
   }
   
   public void buildComponents(){
     // adjusts the solid component if agents have moved
     for(Agent a : agents) buildComponent(a);
-    for(Agent a2 : agents2) buildComponent(a2);
   }
   
   public void buildComponent(Agent a){
@@ -1348,56 +1309,6 @@ class Voxelgrid{
   }
   
   
-  
-  public void buildComponent2(Agent a2){
-	    Voxel voxel = new Voxel(this,a2);
-	    if(a2.component!=null){//agent has an assigned component already
-	      for(Vec3D center : a2.component.centers){
-	        if(center.distanceToSquared(voxel.center)<0.001f) return;//still in the same component: do nothing
-	      }
-	      //else: moved to a different component
-	      boolean existing = false;
-	      Component componentExisting = null;
-	      for(Component component : components){
-	        for(Vec3D center : component.centers){
-	          if(center.distanceToSquared(voxel.center)<0.001f){
-	            existing = true;
-	            componentExisting = component;
-	          }
-	        }
-	      }
-	      if(existing){//moved to an existing component
-	        if(a2.component.agents.size()==1){//the only agent is being removed from this component
-	          components.remove(a2.component);//remove the component
-	          for(Vec3D center : a2.component.centers) centersComponent.remove(center);//remove the centers of the component
-	        }else a2.component.agents.remove(a2);//keep the component but remove the agent from it
-	        a2.component = componentExisting;
-	        componentExisting.agents.add(a2);
-	      }else{//moved to an empty voxel
-	        components.remove(a2.component);//remove the component
-	        for(Vec3D center : a2.component.centers) centersComponent.remove(center);//remove the centers of the component
-	        a2.component=null;
-	        new Component(this, a2);
-	      }
-	    }else{//agent does not have a component assigned
-	      boolean existing = false;
-	      Component componentExisting = null;
-	      for(Component component : components){
-	        for(Vec3D center : component.centers){
-	          if(center.distanceToSquared(voxel.center)<0.001f){
-	            existing = true;
-	            componentExisting = component;
-	          }
-	        }
-	      }
-	      if(existing){//moved to an existing component
-	        a2.component = componentExisting;
-	        componentExisting.agents.add(a2);
-	      }else{//agent needs a new component
-	        new Component(this, a2);
-	      }
-	    }
-	  }
   
   
   
@@ -1776,10 +1687,6 @@ public synchronized void draw(){
       for(Agent a:agents) a.move();
       for(Agent a:agents) a.update();
       agents.addAll(agentsNew); agentsNew.clear();
-      
-      for(Agent a2:agents2) a2.move();
-      for(Agent a2:agents2) a2.update();
-      agents2.addAll(agentsNew2); agentsNew2.clear();
     }
     
     //pushMatrix();//for rotation of the model
@@ -1798,7 +1705,6 @@ public synchronized void draw(){
   
     //AGENTS
     if(showAgents) for(Agent a : agents) a.display();
-    if(showAgents) for(Agent a2 : agents2) a2.display();
     if(showEdges) for(Agent a : agents) a.displayEdges();
     if(showFaces) for(Agent a : agents) a.displayFaces();
     if(showNormals) for(Agent a : agents) a.displayNormals();

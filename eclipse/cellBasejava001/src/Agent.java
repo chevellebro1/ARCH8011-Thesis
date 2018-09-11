@@ -239,7 +239,7 @@ public class Agent extends Vec3D {
 	    ArrayList<Agent> neighbors2 = new ArrayList<Agent>(neighbors);
 	    if(neighbors2.size()<3){
 	      if(agents.size()<4){
-	        parent.println("planarize error",neighbors2.size(),agents.size());//not enough agents in the scene
+	        PApplet.println("planarize error",neighbors2.size(),agents.size());//not enough agents in the scene
 	      }else{
 	        ArrayList<Agent> aSorted = new ArrayList<Agent>(agents);// sorted agents, aSorted.get(0) will be "this"
 	        final Vec3D thisPos = new Vec3D(this);
@@ -426,7 +426,7 @@ public class Agent extends Vec3D {
 	      if(edge.vertices.contains(cv2)) edgeCommon = edge;
 	    }
 	    if(edgeCommon==null){
-	      parent.println("ERROR followMesh");
+	      PApplet.println("ERROR followMesh");
 	      return new Vec3D();
 	    }
 	    if(edgeCommon.faces.size()>1){

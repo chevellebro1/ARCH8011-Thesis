@@ -1,8 +1,5 @@
 import java.util.*;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Set;
+
 import processing.core.PApplet;
 
 import toxi.geom.Vec3D;
@@ -17,7 +14,6 @@ import toxi.geom.Vec3D;
  *
  * Agent class
  *
- * Copyright (C) Christoph Klemmt
  * All Rights Reserved.
  * All information contained herein is, and remains the property of 
  * Christoph Klemmt. Dissemination of this information or reproduction
@@ -46,10 +42,8 @@ class Agent extends Vec3D{
   growthBase.Voxel voxel;// voxel of the agent for voxelization
   growthBase.Component component;// component of the agent, for voxelization
   
-  
- 
-  
   PApplet parent;
+  
   
   Agent(PApplet p) {
 	  parent = p;

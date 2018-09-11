@@ -1,15 +1,10 @@
-import java.util.ArrayList;
+import java.util.*;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
-
-import growthBase.Attractor;
-import growthBase.Component;
-import growthBase.Edge;
-import growthBase.Vertex;
-import growthBase.Voxel;
 import processing.core.PApplet;
+
 import toxi.geom.Vec3D;
 
 /**
@@ -50,6 +45,41 @@ class Agent extends Vec3D{
   Vec3D normal;//the normal of the agent according to its neighbors
   growthBase.Voxel voxel;// voxel of the agent for voxelization
   growthBase.Component component;// component of the agent, for voxelization
+  
+  
+ 
+  
+  PApplet parent;
+  
+  Agent(PApplet p) {
+	  parent = p;
+  }
+  
+  
+  //IMPORT VARIABLES
+  growthBase ex = new growthBase();
+  int[] _col = ex._col;
+  int _maxNeighbors = ex._maxNeighbors;
+  float _range = ex._range;
+  float _drag = ex._drag;
+  float _facNeighborsClose = ex._facNeighborsClose;
+  float _facNeighborsClosest = ex._facNeighborsClosest;
+  float _facNeighborsFar = ex._facNeighborsFar;
+  float _facPlanarize = ex._facPlanarize;
+  float _facStrata = ex._facStrata;
+  float _facOrthogonal = ex._facOrthogonal;
+  float _facAttractors = ex._facAttractors;
+  Vec3D _unary = ex._unary;
+  float _facFollowMesh = ex._facFollowMesh;
+  float _facVoxel = ex._facVoxel;
+  int _minAge = ex._minAge;
+  int _countDivide = ex._countDivide;
+  float _rangeDivide = ex._rangeDivide;
+  float _offsetDivision = ex._offsetDivision;
+  float _facVelChild = ex._facVelChild;
+  float _facVelParent = ex._facVelParent;
+  float _rangeClose = ex._rangeClose;
+  
   
   //SETTINGS
   int[] col = _col;
@@ -124,7 +154,7 @@ class Agent extends Vec3D{
         distanceAverage=distanceAverage/PApplet.parseFloat(count);
         if(distanceAverage>rangeDivide){
           Vec3D posNew = this;// position of the child cell
-          posNew.addSelf(new Vec3D(random(-offsetDivision,offsetDivision),random(-offsetDivision,offsetDivision),random(-offsetDivision,offsetDivision)));//random offset within a range
+          posNew.addSelf(new Vec3D(parent.random(-offsetDivision,offsetDivision),parent.random(-offsetDivision,offsetDivision),parent.random(-offsetDivision,offsetDivision)));//random offset within a range
           Vec3D velNew = vel.scale(facVelChild);// velocity of the child cell
           Agent agentNew = new Agent(posNew, velNew);
           agentNew.neighbors = new ArrayList(neighbors);
@@ -153,14 +183,14 @@ class Agent extends Vec3D{
   public void findNeighbors(){
     ArrayList<Agent> agentsSorted = new ArrayList<Agent>();
     // construct list of neighbors to be evaluated
-    if (frameCount%200==0 || neighbors.size()<4){  
+    if (parent.frameCount%200==0 || neighbors.size()<4){  
       agentsSorted = new ArrayList<Agent>(agents);// sorted agents, aSorted.get(0) will be "this"
     }else{
       Set<Agent> agentSet = new HashSet<Agent>(neighbors);
       for(Agent n : neighbors) {
         for(Agent nn : n.neighbors) {
           agentSet.add(nn);
-          if(frameCount%20==0){
+          if(parent.frameCount%20==0){
             for(Agent nnn : nn.neighbors){
               agentSet.add(nnn);
             }
@@ -320,9 +350,9 @@ class Agent extends Vec3D{
   
   
   //ATTRACTORS
-  public Vec3D forceAttractors(ArrayList<Attractor> attractors, float strength){
+  public Vec3D forceAttractors(ArrayList<growthBase.Attractor> attractors, float strength){
     Vec3D vec = new Vec3D();
-    for(Attractor a : attractors){
+    for(growthBase.Attractor a : attractors){
       Vec3D vecAtt;
       Vec3D pos = new Vec3D(a);
       if(a.activeDir[0]==false) pos.x=this.x;
@@ -392,16 +422,16 @@ class Agent extends Vec3D{
   //MESH FOLLOW
   public Vec3D followMesh(float strength) {
     if(strength==0.0f) return new Vec3D();
-    Vertex cv = meshFollow.getClosestVertex(this);//closest vertex
-    Vertex cv2 = null;// the second closest vertex among cv's neighbors
-    for(Vertex x:cv.vertices) cv2=(cv2==null||x.distanceToSquared(this)<cv2.distanceToSquared(this))?x:cv2;
+    growthBase.Vertex cv = meshFollow.getClosestVertex(this);//closest vertex
+    growthBase.Vertex cv2 = null;// the second closest vertex among cv's neighbors
+    for(growthBase.Vertex x:cv.vertices) cv2=(cv2==null||x.distanceToSquared(this)<cv2.distanceToSquared(this))?x:cv2;
     //check how many faces the common edge has, if it is an open edge
-    Edge edgeCommon = null;
-    for(Edge edge : cv.edges){
+    growthBase.Edge edgeCommon = null;
+    for(growthBase.Edge edge : cv.edges){
       if(edge.vertices.contains(cv2)) edgeCommon = edge;
     }
     if(edgeCommon==null){
-      println("ERROR followMesh");
+      PApplet.println("ERROR followMesh");
       return new Vec3D();
     }
     if(edgeCommon.faces.size()>1){
@@ -459,17 +489,17 @@ class Agent extends Vec3D{
   
   // DISPLAY
   public void display(){
-    stroke(col[0],col[1],col[2]);
-    strokeWeight(3);
+    parent.stroke(col[0],col[1],col[2]);
+    parent.strokeWeight(3);
     Vec3D p0 = new Vec3D(this);
     if(voxelize) p0 = voxelgrid.voxelize(p0);
-    point(p0.x, p0.y, p0.z);
+    parent.point(p0.x, p0.y, p0.z);
   }
   
   // DISPLAY EDGES
   public void displayEdges(){
-    strokeWeight(1);
-    stroke(50, 100, 255, 150);
+    parent.strokeWeight(1);
+    parent.stroke(50, 100, 255, 150);
     for(Agent n : neighbors){
       if(agents.indexOf(this)<agents.indexOf(n)){
         Vec3D p0 = new Vec3D(this);
@@ -478,15 +508,15 @@ class Agent extends Vec3D{
           p0 = voxelgrid.voxelize(p0);
           p1 = voxelgrid.voxelize(p1);
         }
-        line(p0.x, p0.y, p0.z, p1.x, p1.y, p1.z);
+        parent.line(p0.x, p0.y, p0.z, p1.x, p1.y, p1.z);
       }
     }
   }
   
   // DISPLAY FACES
   public void displayFaces(){
-    noStroke();
-    fill(255, 150);
+    parent.noStroke();
+    parent.fill(255, 150);
     for(Agent n1 : neighbors){
       for(Agent n2 : neighbors){
         if(n1.neighbors.contains(n2) || n2.neighbors.contains(n1)){//triangle
@@ -499,12 +529,11 @@ class Agent extends Vec3D{
               p1 = voxelgrid.voxelize(p1);
               p2 = voxelgrid.voxelize(p2);
             }
-            beginShape();
-            vertex(p0.x,p0.y,p0.z);
-            vertex(p1.x,p1.y,p1.z);
-            vertex(p2.x,p2.y,p2.z);
-            vertex(p0.x,p0.y,p0.z);
-            endShape();
+            parent.beginShape();
+            parent.vertex(p0.x,p0.y,p0.z);
+            parent.vertex(p2.x,p2.y,p2.z);
+            parent.vertex(p0.x,p0.y,p0.z);
+            parent.endShape();
           }
         }else{
           for(Agent n3 : n1.neighbors){
@@ -521,13 +550,13 @@ class Agent extends Vec3D{
                     p2 = voxelgrid.voxelize(p2);
                     p3 = voxelgrid.voxelize(p3);
                   }
-                  beginShape();
-                  vertex(p0.x,p0.y,p0.z);
-                  vertex(p1.x,p1.y,p1.z);
-                  vertex(p3.x,p3.y,p3.z);
-                  vertex(p2.x,p2.y,p2.z);
-                  vertex(p0.x,p0.y,p0.z);
-                  endShape();
+                  parent.beginShape();
+                  parent.vertex(p0.x,p0.y,p0.z);
+                  parent.vertex(p1.x,p1.y,p1.z);
+                  parent.vertex(p3.x,p3.y,p3.z);
+                  parent.vertex(p2.x,p2.y,p2.z);
+                  parent.vertex(p0.x,p0.y,p0.z);
+                  parent.endShape();
                 }
               }
             }
@@ -541,9 +570,9 @@ class Agent extends Vec3D{
   
   public void displayNormals(){
     Vec3D p = this.add(normal.normalizeTo(5));
-    strokeWeight(1);
-    stroke(0,125,100);
-    line(x,y,z,p.x,p.y,p.z);
+    parent.strokeWeight(1);
+    parent.stroke(0,125,100);
+    parent.line(x,y,z,p.x,p.y,p.z);
   }
   
   

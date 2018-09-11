@@ -39,7 +39,7 @@
 	</section>
 	<section name="ImportExportAction">
 		<item value="org.eclipse.ui.wizards.export.ZipFile" key="ImportExportPage.STORE_SELECTED_EXPORT_WIZARD_ID"/>
-		<item value="org.eclipse.ui.wizards.import.ExternalProject" key="ImportExportPage.STORE_SELECTED_IMPORT_WIZARD_ID"/>
+		<item value="org.eclipse.ui.wizards.import.FileSystem" key="ImportExportPage.STORE_SELECTED_IMPORT_WIZARD_ID"/>
 		<list key="ImportExportPage.STORE_EXPANDED_IMPORT_CATEGORIES">
 			<item value="org.eclipse.ui.Basic"/>
 		</list>
@@ -57,6 +57,10 @@
 		<item value="false" key="WizardFileSystemResourceImportPage1.STORE_CREATE_CONTAINER_STRUCTURE_ID"/>
 		<item value="false" key="WizardFileSystemResourceImportPage1.STORE_OVERWRITE_EXISTING_RESOURCES_ID"/>
 		<list key="WizardFileSystemResourceImportPage1.STORE_SOURCE_NAMES_ID">
+			<item value="C:\Users\Richie1\Desktop\karambaTest001"/>
+			<item value="K:\University of Cincinnati\2019 Thesis Year\~github\ARCH8011-Thesis\eclipse\cellShell005\src"/>
+			<item value="K:\University of Cincinnati\2019 Thesis Year\~github\ARCH8011-Thesis\examples\CellsBasic180912\CellsBasic180912\input"/>
+			<item value="K:\University of Cincinnati\2019 Thesis Year\~github\ARCH8011-Thesis\examples\CellsBasic180912\CellsBasic180912\application.windows64\lib"/>
 			<item value="K:\University of Cincinnati\2019 Thesis Year\~github\ARCH8011-Thesis\examples\CellsBasic180514"/>
 			<item value="K:\University of Cincinnati\2019 Thesis Year\~github\ARCH8011-Thesis\examples\CellsBasic180514\application.windows64\lib"/>
 			<item value="C:\Program Files\processing-3.3.7\core\library"/>

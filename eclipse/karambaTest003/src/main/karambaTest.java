@@ -2632,57 +2632,6 @@ public class karambaTest extends PApplet {
 		
 		
 		
-		
-		/*
-		ArrayList<Agent> agentsDisconnected = new ArrayList<Agent>(); //new array list
-		PrintWriter output = createWriter("input/Processing_Karamba.txt"); //output address
-		output.println(agents.size()); //output ArrayList<Agent> size
-		for (Agent a : agents) {
-			if (a.neighbors.size() > 0)
-				output.println(a.x + "," + a.y + "," + a.z); //output ArrayList<Agents> points
-			else
-				agentsDisconnected.add(a);
-		}
-		for (Agent a : agents) {// beams
-			for (Agent n : a.neighbors) { //agents for neighbor and agents
-				if (n.neighbors.contains(a) == false || a.index < n.index) //if agents have less than neighbors
-					output.println(agents.indexOf(a) + "_" + agents.indexOf(n)); //print index of agents & neighbors
-			}
-		}
-		output.flush(); //clear output files
-		output.close(); //close output task
-		File file = new File(sketchPath("") + "input/Processing_Karamba.txt"); //output address
-		long lastModified = file.lastModified(); //last modified information
-		file = new File(sketchPath("") + "input/Karamba_Processing.txt"); //output address
-		while (true) {
-			if (file.exists()) {
-				if (file.lastModified() > lastModified) //if last modified is older than current continue
-					break;
-			}
-			if ((new Date()).getTime() > lastModified + timeoutKaramba * 1000) { //if last modified is older than current TIMEOUT
-				println("TIMEOUT for GH Karamba");
-				if (frameCount == getDisplacementInterval) {
-					println("getDisplacements turned off");
-					getDisplacements = false;
-				}
-				return;
-			}
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				println("sleep interrupted");
-			}
-		}
-		
-		**/
-		
-		
-		
-		
-		
-		
-		
-		
 		//POINTS
 		
 		for (Agent a : agents) {// beams
@@ -2750,30 +2699,10 @@ public class karambaTest extends PApplet {
 		Response response = new Response(analysis);
 		
 		//DISPLAY
-		
-		double max_disp = response.maxDisplacement();
+
+		ArrayList<Vec3D> displacements = new ArrayList<Vec3D>();
 	}
 		
-		
-		
-		
-		
-		/*
-		ArrayList<Vec3D> displacements = ImportPoints("input/Karamba_Processing.txt"); //import updated points
-		if (agents.size() - agentsDisconnected.size() != displacements.size()) {
-			println("ERROR getDisplacements(): agents.size()-agentsDisconnected.size():",
-					agents.size() - agentsDisconnected.size(), " displacements.size():", displacements.size());
-			return;
-		}
-		if (agentsDisconnected.size() > 0)
-			println("disconnected agents not implemented yet!p");
-		for (int i = 0; i < agents.size(); i++)
-			agents.get(i).displacement = displacements.get(i);
-		println("displacements imported:", displacements.size()); //display imported size of agents
-	}
-
-
-**/
 
 
 	static public void main(String[] passedArgs) {
@@ -2785,3 +2714,96 @@ public class karambaTest extends PApplet {
 		}
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//GRASSHOPPER
+
+
+
+//OUTPUT
+/*
+ArrayList<Agent> agentsDisconnected = new ArrayList<Agent>(); //new array list
+PrintWriter output = createWriter("input/Processing_Karamba.txt"); //output address
+output.println(agents.size()); //output ArrayList<Agent> size
+for (Agent a : agents) {
+	if (a.neighbors.size() > 0)
+		output.println(a.x + "," + a.y + "," + a.z); //output ArrayList<Agents> points
+	else
+		agentsDisconnected.add(a);
+}
+for (Agent a : agents) {// beams
+	for (Agent n : a.neighbors) { //agents for neighbor and agents
+		if (n.neighbors.contains(a) == false || a.index < n.index) //if agents have less than neighbors
+			output.println(agents.indexOf(a) + "_" + agents.indexOf(n)); //print index of agents & neighbors
+	}
+}
+output.flush(); //clear output files
+output.close(); //close output task
+File file = new File(sketchPath("") + "input/Processing_Karamba.txt"); //output address
+long lastModified = file.lastModified(); //last modified information
+file = new File(sketchPath("") + "input/Karamba_Processing.txt"); //output address
+while (true) {
+	if (file.exists()) {
+		if (file.lastModified() > lastModified) //if last modified is older than current continue
+			break;
+	}
+	if ((new Date()).getTime() > lastModified + timeoutKaramba * 1000) { //if last modified is older than current TIMEOUT
+		println("TIMEOUT for GH Karamba");
+		if (frameCount == getDisplacementInterval) {
+			println("getDisplacements turned off");
+			getDisplacements = false;
+		}
+		return;
+	}
+	try {
+		Thread.sleep(1000);
+	} catch (InterruptedException e) {
+		println("sleep interrupted");
+	}
+}
+
+**/
+
+
+
+//INPUT
+/*
+ArrayList<Vec3D> displacements = ImportPoints("input/Karamba_Processing.txt"); //import updated points
+if (agents.size() - agentsDisconnected.size() != displacements.size()) {
+	println("ERROR getDisplacements(): agents.size()-agentsDisconnected.size():",
+			agents.size() - agentsDisconnected.size(), " displacements.size():", displacements.size());
+	return;
+}
+if (agentsDisconnected.size() > 0)
+	println("disconnected agents not implemented yet!p");
+for (int i = 0; i < agents.size(); i++)
+	agents.get(i).displacement = displacements.get(i);
+println("displacements imported:", displacements.size()); //display imported size of agents
+}
+
+
+**/

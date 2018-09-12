@@ -66,11 +66,16 @@ public class karambaTest extends PApplet {
 	boolean loaded = false;
 	ArrayList<Agent> agents = new ArrayList<Agent>();
 	ArrayList<Agent> agentsNew = new ArrayList<Agent>();
+	ArrayList<Agent> agentsDisconnected = new ArrayList<Agent>(); //new array list
+	ArrayList<Agent> agentsIndex = new ArrayList<Agent>(); // agent index
 	ArrayList<Attractor> attractors = new ArrayList<Attractor>();
-	boolean getDisplacements = false;
+	boolean getDisplacements = true;
 	int getDisplacementInterval = 50;
 	int timeoutKaramba = 2;// maximum seconds to wait for Karamba
 	int supportMin = (int) 1.4;
+	int agentIndex;
+	int neighborIndex;
+	int agentSize;
 
 // VOXELS AND COMPONENTS
 	Voxelgrid voxelgrid = new Voxelgrid(0, new float[] { 2, 2, 2 });// voxelType: 0: reactangular; 1: pyramid; 2: triangular 3; gridsize should be larger than 0.1.
@@ -2295,7 +2300,7 @@ public class karambaTest extends PApplet {
 						envSize.get(1).z - envSize.get(0).z);
 				popMatrix();
 			}
-
+			
 			// AGENTS
 			if (showAgents)
 				for (Agent a : agents)
@@ -2352,7 +2357,8 @@ public class karambaTest extends PApplet {
 				println("component length:", ceil(voxelgrid.componentLength(0.04f)));
 				printLength = false;
 			}
-
+			
+			debugPrint();
 		}
 	}
 
@@ -2468,6 +2474,31 @@ public class karambaTest extends PApplet {
 		output.close();
 	}
 
+	
+	
+	
+//PRINT DEBUG VARIABLES
+	public void debugPrint() {
+		PrintWriter output = createWriter("debug.txt");
+		// agent variables
+		output.println("AGENT VARIABLES");
+		output.println("Agents Index:" + agentIndex);
+		output.println("Neighbor Index:" +neighborIndex);
+		output.println("Agents:" + agentsDisconnected);
+		agentSize = agents.size();
+		output.println("f:"+ frameCount + " " + "a:" + agentSize);
+		output.flush();
+		output.close();
+	}
+	  
+	
+	
+	
+	
+	
+	
+	
+	
 //EXPORT KEYS
 	public void keyPressed() {
 
@@ -2613,6 +2644,7 @@ public class karambaTest extends PApplet {
 	
 	
 //GET DISPLACEMENTS FROM KARAMBA
+	
 	public void getDisplacements() {
 
 		System.load(
@@ -2629,31 +2661,35 @@ public class karambaTest extends PApplet {
 		
 		
 		//POINTS
-		
 	
+		//POINTS OF AGENTS
+		for (Agent a : agents) { //agents list
+			if (a.neighbors.size() > 0) { //if agents neighbors larger than 0
+				agentsDisconnected.add(a); //add agents to new list
+			}
+		}
+		
+		//INDEX OF POINTS
+		agentIndex = 0;
+		neighborIndex = 0;
 		for (Agent a : agents) {// beams
-			for (Agent n : a.neighbors) { //agents for neighbor and agents
-				if (n.neighbors.contains(a) == false || a.index < n.index); //if agents have less than neighbors
-					//output.println(agents.indexOf(a) + "_" + agents.indexOf(n)); //print index of agents & neighbors
-			}
-		}
-		
-		//SUPPORT
-		
-		for(Agent a : agents) {
-			if(a.z < supportMin) {
-				agents = new ArrayList<Agent>(agents.subList(0, supportMin));
-			} else {
-				
+			for (Agent n : a.neighbors) { //agents for neighbor
+				if (n.neighbors.contains(a) == false || a.index < n.index) { //if agents have less than neighbors
+					agentIndex = agents.indexOf(a);
+					neighborIndex = agents.indexOf(n);
+				}
+					/*output.println(agents.indexOf(a) + "_" + agents.indexOf(n)); print index of agents & neighbors**/
 			}
 		}
 		
 		
-		//LOAD
+		//MATERIAL
 		
-		Vec3d f = new Vec3d(0.0,0.0,1.0);
-		LoadPoint load = new LoadPoint(f);
-		
+		double E = 210000; // MN/m2
+		double G = 80000; // MN/m2
+		double gamma = 78.5; // MN/m3
+		Material material = new Material(E,G,gamma);
+		material.swigCMemOwn = false;		
 		
 		//CROSSEC
 		double A = 0.05; // m2
@@ -2665,20 +2701,31 @@ public class karambaTest extends PApplet {
 		Beam3DCroSec crosec = new Beam3DCroSec(A,Iyy,Izz,Ipp,ky,kz);
 		crosec.swigCMemOwn = false;
 		
-		
-		//MATERIAL
-		
-		double E = 210000; // MN/m2
-		double G = 80000; // MN/m2
-		double gamma = 78.5; // MN/m3
-		Material material = new Material(E,G,gamma);
-		material.swigCMemOwn = false;
-		
 		//INDEX TO BEAM (ELEMENTS)
 		feb.Node nodes[] = new Node[2];
 		nodes[0] = new Node(0,0,0);
 		nodes[1] = new Node(1,0,0);
 		Beam3D beam = new Beam3D(nodes[0], nodes[1], material, crosec);
+	}
+	
+		
+		/*
+		
+		//SUPPORT
+		
+		for(Agent a : agents) {
+			if(a.z < supportMin) {
+				agents = new ArrayList<Agent>(agents.subList(0, supportMin));
+			} else {
+				
+			}
+		}
+		
+		//LOAD
+		
+		Vec3d f = new Vec3d(0.0,0.0,1.0);
+		LoadPoint load = new LoadPoint(f);
+	
 				
 		
 		//ASSEMBLE (MODEL)
@@ -2702,7 +2749,7 @@ public class karambaTest extends PApplet {
 		ArrayList<Vec3D> displacements = new ArrayList<Vec3D>();
 	}
 		
-
+**/
 	
 
 	static public void main(String[] passedArgs) {

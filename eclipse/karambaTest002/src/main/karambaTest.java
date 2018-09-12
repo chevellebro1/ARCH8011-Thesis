@@ -74,7 +74,7 @@ boolean loaded = false;
 ArrayList<Agent> agents = new ArrayList<Agent>();
 ArrayList<Agent> agentsNew = new ArrayList<Agent>();
 ArrayList<Attractor> attractors = new ArrayList<Attractor>();
-boolean getDisplacements = true;
+boolean getDisplacements = false;
 int getDisplacementInterval = 50;
 int timeoutKaramba = 2;//maximum seconds to wait for Karamba
 

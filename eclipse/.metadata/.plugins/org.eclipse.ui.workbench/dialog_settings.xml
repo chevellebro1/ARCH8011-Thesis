@@ -57,6 +57,13 @@
 		<item value="false" key="WizardFileSystemResourceImportPage1.STORE_CREATE_CONTAINER_STRUCTURE_ID"/>
 		<item value="false" key="WizardFileSystemResourceImportPage1.STORE_OVERWRITE_EXISTING_RESOURCES_ID"/>
 		<list key="WizardFileSystemResourceImportPage1.STORE_SOURCE_NAMES_ID">
+			<item value="K:\University of Cincinnati\2019 Thesis Year\~github\ARCH8011-Thesis\eclipse\cellBase008\src"/>
+			<item value="K:\University of Cincinnati\2019 Thesis Year\~github\ARCH8011-Thesis\eclipse\Cantilever"/>
+			<item value="K:\University of Cincinnati\2019 Thesis Year\~github\ARCH8011-Thesis\eclipse\cellBase007"/>
+			<item value="K:\University of Cincinnati\2019 Thesis Year\Thesis Studio 8009\Processing\karamba\Java\feb"/>
+			<item value="K:\University of Cincinnati\2019 Thesis Year\~github\ARCH8011-Thesis\eclipse\karambaTest002\src\main"/>
+			<item value="K:\University of Cincinnati\2019 Thesis Year\~github\ARCH8011-Thesis\eclipse\Cantilever\src\feb"/>
+			<item value="K:\University of Cincinnati\2019 Thesis Year\~github\ARCH8011-Thesis\eclipse\cellBase007\src"/>
 			<item value="C:\Users\Richie1\Desktop\karambaTest001"/>
 			<item value="K:\University of Cincinnati\2019 Thesis Year\~github\ARCH8011-Thesis\eclipse\cellShell005\src"/>
 			<item value="K:\University of Cincinnati\2019 Thesis Year\~github\ARCH8011-Thesis\examples\CellsBasic180912\CellsBasic180912\input"/>
@@ -70,8 +77,6 @@
 			<item value="K:\University of Cincinnati\2019 Thesis Year\~github\ARCH8011-Thesis\eclipse\ProcessingExport"/>
 			<item value="C:\Users\Richard\Documents\Processing\libraries\toxiclibs-complete-0020\toxiclibs_p5\library"/>
 			<item value="C:\Users\Richard\Documents\Processing\libraries\toxiclibs-complete-0020\toxiclibscore\library"/>
-			<item value="C:\Users\Richard\Documents\Processing\libraries\peasycam\library"/>
-			<item value="K:\University of Cincinnati\2019 Thesis Year\Thesis Studio 8009\Processing\karamba\Java\feb"/>
 		</list>
 	</section>
 	<section name="ZipFileExportWizard">

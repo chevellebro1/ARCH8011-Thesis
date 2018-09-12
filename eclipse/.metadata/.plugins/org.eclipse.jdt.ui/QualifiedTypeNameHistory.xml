@@ -3,7 +3,6 @@
     <fullyQualifiedTypeName name="feb.NodeState"/>
     <fullyQualifiedTypeName name="feb.Node.DOF"/>
     <fullyQualifiedTypeName name="feb.BoundaryCondition.BCType"/>
-    <fullyQualifiedTypeName name="toxi.geom.Vec3D"/>
     <fullyQualifiedTypeName name="peasy.PeasyCam"/>
     <fullyQualifiedTypeName name="cellbasics.Agent"/>
     <fullyQualifiedTypeName name="cellbasics.Voxelgrid"/>
@@ -13,4 +12,8 @@
     <fullyQualifiedTypeName name="Agent.cellAgent"/>
     <fullyQualifiedTypeName name="cellBase.Agent"/>
     <fullyQualifiedTypeName name="cellBase"/>
+    <fullyQualifiedTypeName name="growthBase"/>
+    <fullyQualifiedTypeName name="growthBase.Mesh"/>
+    <fullyQualifiedTypeName name="toxi.geom.Vec3D"/>
+    <fullyQualifiedTypeName name="growthBase.Voxelgrid"/>
 </qualifiedTypeNameHistroy>

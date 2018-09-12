@@ -3,6 +3,9 @@ package main;
 import processing.core.*;
 import java.util.*;
 import java.util.Set;
+
+import javax.swing.text.html.parser.Element;
+
 import java.util.HashSet;
 import java.text.*;
 import java.lang.reflect.*;
@@ -69,6 +72,11 @@ public class karambaTest extends PApplet {
 	ArrayList<Agent> agentsDisconnected = new ArrayList<Agent>(); //new array list
 	ArrayList<Agent> agentsIndex = new ArrayList<Agent>(); // agent index
 	ArrayList<Attractor> attractors = new ArrayList<Attractor>();
+	
+	ArrayList<Integer> agentsIA = new ArrayList<Integer>();
+	ArrayList<Integer> agentsIB = new ArrayList<Integer>();
+	
+	
 	boolean getDisplacements = true;
 	int getDisplacementInterval = 50;
 	int timeoutKaramba = 2;// maximum seconds to wait for Karamba
@@ -76,6 +84,12 @@ public class karambaTest extends PApplet {
 	int agentIndex;
 	int neighborIndex;
 	int agentSize;
+	Agent element1;
+	Agent element2;
+	float elementIA;
+	float elementIB;
+	
+	float debug;
 
 // VOXELS AND COMPONENTS
 	Voxelgrid voxelgrid = new Voxelgrid(0, new float[] { 2, 2, 2 });// voxelType: 0: reactangular; 1: pyramid; 2: triangular 3; gridsize should be larger than 0.1.
@@ -2482,22 +2496,30 @@ public class karambaTest extends PApplet {
 		PrintWriter output = createWriter("debug.txt");
 		// agent variables
 		output.println("AGENT VARIABLES");
-		output.println("Agents Index:" + agentIndex);
-		output.println("Neighbor Index:" +neighborIndex);
+		output.println();
+		
+		output.println("Agents Index:" + agentsIA);
+		output.println();
+		
+		output.println("Neighbor Index:" + agentsIB);
+		output.println();
+		
 		output.println("Agents:" + agentsDisconnected);
 		agentSize = agents.size();
+		output.println();
+		
+		
+		output.println(debug);
+
+		
+		output.println();
+		
 		output.println("f:"+ frameCount + " " + "a:" + agentSize);
 		output.flush();
 		output.close();
 	}
 	  
-	
-	
-	
-	
-	
-	
-	
+
 	
 //EXPORT KEYS
 	public void keyPressed() {
@@ -2672,16 +2694,18 @@ public class karambaTest extends PApplet {
 		//INDEX OF POINTS
 		agentIndex = 0;
 		neighborIndex = 0;
+
 		for (Agent a : agents) {// beams
 			for (Agent n : a.neighbors) { //agents for neighbor
 				if (n.neighbors.contains(a) == false || a.index < n.index) { //if agents have less than neighbors
 					agentIndex = agents.indexOf(a);
 					neighborIndex = agents.indexOf(n);
+					agentsIA.add(agentIndex);
+					agentsIB.add(neighborIndex);
 				}
 					/*output.println(agents.indexOf(a) + "_" + agents.indexOf(n)); print index of agents & neighbors**/
 			}
 		}
-		
 		
 		//MATERIAL
 		
@@ -2701,10 +2725,41 @@ public class karambaTest extends PApplet {
 		Beam3DCroSec crosec = new Beam3DCroSec(A,Iyy,Izz,Ipp,ky,kz);
 		crosec.swigCMemOwn = false;
 		
+		
 		//INDEX TO BEAM (ELEMENTS)
+		
+		int n1 = 0;
+		int n2 = 0;
+		int n3 = 0;
+		int n4 = 0;
+		int n5 = 0;
+		int n6 = 0;
+		
+		int i1 = agentIndex; //index of agent
+		int i2 = neighborIndex; //index of neighbor
+		
+		element1 = agents.get(i1); // element1 is point from agent
+		element2 = agents.get(i2); //element2 is point from neighbor
+		
+		elementIA = element1.x();
+		elementIA = n1;
+		elementIA = element1.y();
+		elementIA = n2;
+		elementIA = element1.z();
+		elementIA = n3;
+		
+		elementIB = element2.x();
+		elementIA = n4;
+		elementIA = element2.y();
+		elementIA = n5;
+		elementIA = element2.z();
+		elementIA = n6;
+		
+		debug = n4;
+		
 		feb.Node nodes[] = new Node[2];
-		nodes[0] = new Node(0,0,0);
-		nodes[1] = new Node(1,0,0);
+		nodes[0] = new Node(n1,n2,n3);
+		nodes[1] = new Node(n4,n5,n6);
 		Beam3D beam = new Beam3D(nodes[0], nodes[1], material, crosec);
 	}
 	

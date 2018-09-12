@@ -16,6 +16,8 @@ import feb.Material;
 import feb.Model;
 import feb.Node;
 import feb.Response;
+import feb.Vec3d;
+import feb.LoadPoint;
 
 import java.util.ArrayList;
 import java.io.File;
@@ -69,6 +71,7 @@ public class karambaTest extends PApplet {
 	boolean getDisplacements = false;
 	int getDisplacementInterval = 50;
 	int timeoutKaramba = 2;// maximum seconds to wait for Karamba
+	int supportMin = (int) 1.4;
 
 // VOXELS AND COMPONENTS
 	Voxelgrid voxelgrid = new Voxelgrid(0, new float[] { 2, 2, 2 });// voxelType: 0: reactangular; 1: pyramid; 2:
@@ -2689,10 +2692,20 @@ public class karambaTest extends PApplet {
 			}
 		}
 		
-		
 		//SUPPORT
 		
+		for(Agent a : agents) {
+			if(a.z < supportMin) {
+				agents = new ArrayList<Agent>(agents.subList(0, supportMin));
+			}
+		}
+		
+		
 		//LOAD
+		
+		Vec3d f = new Vec3d(0.0,0.0,1.0);
+		LoadPoint load = new LoadPoint(f);
+		
 		
 		//CROSSEC
 		double A = 0.05; // m2
@@ -2738,6 +2751,7 @@ public class karambaTest extends PApplet {
 		
 		//DISPLAY
 		
+		double max_disp = response.maxDisplacement();
 	}
 		
 		

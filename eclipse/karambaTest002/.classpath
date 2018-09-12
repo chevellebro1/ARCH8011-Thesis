@@ -5,7 +5,7 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="src" path="src"/>
+	<classpathentry excluding="feb/" kind="src" path="src"/>
 	<classpathentry kind="lib" path="core.jar"/>
 	<classpathentry kind="lib" path="gluegen-rt-natives-windows-amd64.jar"/>
 	<classpathentry kind="lib" path="gluegen-rt.jar"/>

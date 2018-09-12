@@ -61,8 +61,7 @@ public class karambaTest extends PApplet {
 
 // VARIABLES
 	PeasyCam cam;
-	ArrayList<Vec3D> envSize = new ArrayList<Vec3D>(
-			Arrays.asList(new Vec3D(-1000, -1000, 0), new Vec3D(1000, 1000, 1000)));
+	ArrayList<Vec3D> envSize = new ArrayList<Vec3D>(Arrays.asList(new Vec3D(-1000, -1000, 0), new Vec3D(1000, 1000, 1000)));
 	Vec3D center;
 	boolean loaded = false;
 	ArrayList<Agent> agents = new ArrayList<Agent>();
@@ -74,24 +73,16 @@ public class karambaTest extends PApplet {
 	int supportMin = (int) 1.4;
 
 // VOXELS AND COMPONENTS
-	Voxelgrid voxelgrid = new Voxelgrid(0, new float[] { 2, 2, 2 });// voxelType: 0: reactangular; 1: pyramid; 2:
-																	// triangular. gridsize should be larger than 0.1.
-	ArrayList<Integer> voxelcounts = new ArrayList<Integer>(Arrays.asList(8, 12, 16));// amount of voxels that the
-																						// component covers. Must be
-																						// sorted from low to high.
+	Voxelgrid voxelgrid = new Voxelgrid(0, new float[] { 2, 2, 2 });// voxelType: 0: reactangular; 1: pyramid; 2: triangular 3; gridsize should be larger than 0.1.
+	ArrayList<Integer> voxelcounts = new ArrayList<Integer>(Arrays.asList(8, 12, 16));// amount of voxels that the component covers. Must be sorted from low to high.
 	boolean componentsAligned = false;// Aligns all components. Overwrites componentsInPlane and componentsAlternating
 	int axisComponentAlignment = 0;// alignment axis for the components, only works if componentsAligned=true.
-	boolean componentsAlternating = true;// places components alternatingly in two direction. Overwrites
-											// componentsInPlane
-	boolean componentsInPlane = true;// the components are either placed within the plane of the agents, or
-										// orthogonal to it
-	boolean componentsInLayers = false;// the components are always placed in horizontal layers, if componentsInPlane
-										// or componentsAlternating
+	boolean componentsAlternating = true;// places components alternatingly in two direction. Overwrites componentsInPlane
+	boolean componentsInPlane = true;// the components are either placed within the plane of the agents, or orthogonal to it
+	boolean componentsInLayers = false;// the components are always placed in horizontal layers, if componentsInPlane or componentsAlternating							
 	ArrayList<Vec3D> densities = new ArrayList<Vec3D>();// points around which the component density is largest
-	float densityDistance = 30;// distance from the points in densities at which the component density gets
-								// reduced
-	ArrayList<Integer> densityAxes = new ArrayList<Integer>(Arrays.asList(0, 1));// the axes along that the components
-																					// can be removed
+	float densityDistance = 30;// distance from the points in densities at which the component density gets reduced
+	ArrayList<Integer> densityAxes = new ArrayList<Integer>(Arrays.asList(0, 1));// the axes along that the components can be removed
 
 // GENERIC AGENT SETTINGS (Can be overridden in the Agent's constructor for separate groups of Agents.)
 	int[] _col = new int[] { 0, 0, 0 };// color of the agent
@@ -110,16 +101,14 @@ public class karambaTest extends PApplet {
 	Vec3D _unary = new Vec3D(0.0f, 0.0f, 0.005f);// unary force (-0.005)
 	float _facFollowMesh = 0.01f;// force towards meshes (+/-0.01-0.05)
 	float _facVoxel = 0.0f;// force towards the closest voxel
-	int _minAge = 10;// minimum age for cell division (a larger number (10) inhibits the growth of
-						// tentacles)
+	int _minAge = 10;// minimum age for cell division (a larger number (10) inhibits the growth of tentacles)
 	int _countDivide = 2;// amount of neighbors to check distance to, to trigger cell division
 	float _rangeDivide = 3.5f;// maximum average distance after which the division is triggered
 	float _offsetDivision = 0.1f;// random offset of the child cell from the parent cell (0.1)
-	float _facVelChild = 0.0f;// scale factor for child velocity after cell division (a negative value
-								// inhibits the growth of tentacles)
-	float _facVelParent = -1.0f;// scale factor for parent velocity after cell division (a negative value
-								// inhibits the growth of tentacles)
+	float _facVelChild = 0.0f;// scale factor for child velocity after cell division (a negative value inhibits the growth of tentacles)
+	float _facVelParent = -1.0f;// scale factor for parent velocity after cell division (a negative value inhibits the growth of tentacles)
 
+	
 // MESHES
 	Mesh meshStart01;
 	Mesh meshStart02;
@@ -2289,7 +2278,7 @@ public class karambaTest extends PApplet {
 					a.update();
 				agents.addAll(agentsNew);
 				agentsNew.clear();
-				saveVariables();
+				//saveVariables();
 			}
 
 			// pushMatrix();//for rotation of the model
@@ -2615,6 +2604,14 @@ public class karambaTest extends PApplet {
 		return collection;
 	}
 
+	
+		
+	
+	
+	
+
+	
+	
 //GET DISPLACEMENTS FROM KARAMBA
 	public void getDisplacements() {
 
@@ -2631,9 +2628,9 @@ public class karambaTest extends PApplet {
 
 		
 		
-		
 		//POINTS
 		
+	
 		for (Agent a : agents) {// beams
 			for (Agent n : a.neighbors) { //agents for neighbor and agents
 				if (n.neighbors.contains(a) == false || a.index < n.index); //if agents have less than neighbors
@@ -2646,6 +2643,8 @@ public class karambaTest extends PApplet {
 		for(Agent a : agents) {
 			if(a.z < supportMin) {
 				agents = new ArrayList<Agent>(agents.subList(0, supportMin));
+			} else {
+				
 			}
 		}
 		
@@ -2704,6 +2703,7 @@ public class karambaTest extends PApplet {
 	}
 		
 
+	
 
 	static public void main(String[] passedArgs) {
 		String[] appletArgs = new String[] { "main.karambaTest" };

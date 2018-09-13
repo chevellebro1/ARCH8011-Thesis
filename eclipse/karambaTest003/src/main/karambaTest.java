@@ -2741,6 +2741,32 @@ public class karambaTest extends PApplet {
 		crosec.swigCMemOwn = false;
 		
 		
+		//NODES
+        ArrayList<Agent> points = new ArrayList<Agent>();
+        for(Agent a : agents) {
+               if(a.neighbors.size()>0) points.add(a);
+        }
+        feb.Node nodes[] = new Node[points.size()];
+        for(int i=0;i<points.size();i++) {
+               nodes[i] = new Node(points.get(i).x,points.get(i).x,points.get(i).x);//not sure what info the Node needs
+        }
+
+        
+      //ELEMENTS
+        ArrayList<ArrayList<Integer>> nodePairs = new ArrayList<ArrayList<Integer>>
+        for (Agent a : points) {//loop through points, not agents
+               for (Agent n : a.neighbors) { //agents for neighbor
+                     if (a.index < n.index || n.neighbors.contains(a) == false) {//agents can have each other as neighbors. therefore in order to avoid duplicating elements, beams are only added if the index of a is smaller, or if the neighbor does not have the agent in its list of neighbors
+                            nodePairs.add(new ArrayList<Integer>(Arrays.asList(points.indexOf(a),points.indexOf(n))));
+                     }
+               }
+        }
+        Beam3D beams[] = new Beam3D[nodePairs.size()];
+        for(int i=0;i<nodePairs.size();i++) {
+               beams[i] = new Beam3D(nodePairs.get(0), nodePairs.get(1), material, crosec);
+        }
+
+		
 		//INDEX TO BEAM (ELEMENTS)
 		
 		ArrayList<Agent> elementT = new ArrayList<Agent>();

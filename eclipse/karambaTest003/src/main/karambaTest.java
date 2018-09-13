@@ -4,7 +4,6 @@ import processing.core.*;
 import java.util.*;
 import java.util.Set;
 
-import javax.swing.text.html.parser.Element;
 
 import java.util.HashSet;
 import java.text.*;
@@ -90,11 +89,11 @@ public class karambaTest extends PApplet {
 	float elementIB;
 	int save;
 	
-	String debug1;
-	Agent debug2;
+	int debug1;
+	int debug2;
 	Agent debug3;
-	int debug4;
-	int debug5;
+	Agent debug4;
+	float debug5;
 	
 	
 
@@ -2514,18 +2513,20 @@ public class karambaTest extends PApplet {
 		output.println("Agents:" + agentsDisconnected);
 		agentSize = agents.size();
 		output.println();
-		
-		output.println(debug4);
-		output.println(debug5);
-		
+				
 		output.println();
 		
 		output.println(debug1);
+		output.println(debug2);
 		
 		output.println();
 		
-		output.println(debug2);
 		output.println(debug3);
+		output.println(debug4);
+		
+		output.println();
+		
+		output.println(debug5);
 		
 		output.println();
 		
@@ -2682,7 +2683,7 @@ public class karambaTest extends PApplet {
 	
 //GET DISPLACEMENTS FROM KARAMBA
 	
-	public void getDisplacements() {
+		public void getDisplacements() {
 
 		System.load(
 				"K:/University of Cincinnati/2019 Thesis Year/Thesis Studio 8009/Processing/karamba/Java/64bit/Cantilever/karambaJAVA.dll");
@@ -2695,17 +2696,17 @@ public class karambaTest extends PApplet {
 			System.exit(1);
 		}
 
-		
-		
+			
+			
 		//POINTS
-	
+		
 		//POINTS OF AGENTS
 		for (Agent a : agents) { //agents list
 			if (a.neighbors.size() > 0) { //if agents neighbors larger than 0
 				agentsDisconnected.add(a); //add agents to new list
 			}
 		}
-		
+			
 		//INDEX OF POINTS
 		agentIndex = 0;
 		neighborIndex = 0;
@@ -2718,18 +2719,17 @@ public class karambaTest extends PApplet {
 					agentsIA.add(agentIndex);
 					agentsIB.add(neighborIndex);
 				}
-					/*output.println(agents.indexOf(a) + "_" + agents.indexOf(n)); print index of agents & neighbors**/
 			}
 		}
-		
+			
 		//MATERIAL
-		
+			
 		double E = 210000; // MN/m2
 		double G = 80000; // MN/m2
 		double gamma = 78.5; // MN/m3
 		Material material = new Material(E,G,gamma);
 		material.swigCMemOwn = false;		
-		
+			
 		//CROSSEC
 		double A = 0.05; // m2
 		double Iyy = 0.00001; // m4 moment of inertia about z axis
@@ -2741,80 +2741,35 @@ public class karambaTest extends PApplet {
 		crosec.swigCMemOwn = false;
 		
 		
-		//NODES
-        ArrayList<Agent> points = new ArrayList<Agent>();
-        for(Agent a : agents) {
-               if(a.neighbors.size()>0) points.add(a);
-        }
-        feb.Node nodes[] = new Node[points.size()];
-        for(int i=0;i<points.size();i++) {
-               nodes[i] = new Node(points.get(i).x,points.get(i).x,points.get(i).x);//not sure what info the Node needs
-        }
-
-        
-      //ELEMENTS
-        ArrayList<ArrayList<Integer>> nodePairs = new ArrayList<ArrayList<Integer>>
-        for (Agent a : points) {//loop through points, not agents
-               for (Agent n : a.neighbors) { //agents for neighbor
-                     if (a.index < n.index || n.neighbors.contains(a) == false) {//agents can have each other as neighbors. therefore in order to avoid duplicating elements, beams are only added if the index of a is smaller, or if the neighbor does not have the agent in its list of neighbors
-                            nodePairs.add(new ArrayList<Integer>(Arrays.asList(points.indexOf(a),points.indexOf(n))));
-                     }
-               }
-        }
-        Beam3D beams[] = new Beam3D[nodePairs.size()];
-        for(int i=0;i<nodePairs.size();i++) {
-               beams[i] = new Beam3D(nodePairs.get(0), nodePairs.get(1), material, crosec);
-        }
-
-		
 		//INDEX TO BEAM (ELEMENTS)
-		
-		ArrayList<Agent> elementT = new ArrayList<Agent>();
-		
-		int n1 = 0;
-		int n2 = 0;
-		int n3 = 0;
-		int n4 = 0;
-		int n5 = 0;
-		int n6 = 0;
-		
-		
-		String element1x;
-		
 		
 		int i1 = agentIndex; //index of agent
 		int i2 = neighborIndex; //index of neighbor
 		
 		element1 = agents.get(i1); // element1 is point from agent
 		element2 = agents.get(i2); //element2 is point from neighbor
-
-		element1x = element1.toString();
-		
-		
-		
-
-		
-		
 		
 		
 		
 		//DEBUG
-		
-		
-		debug1 = element1x;
-		debug2 = element2;
-		debug3 = element1;
-		debug4 = i1;
-		debug5 = i2;
-		
-		
-		
-		
-		
-		feb.Node nodes[] = new Node[2];
-		nodes[0] = new Node(n1,n2,n3);
+        debug1 = i1;
+        debug2 = i2;
+        debug3 = element1;
+        debug4 = element2;
+        
+        
+        
+        
+        
+        
+		/*feb.Node nodes[] = new Node[2];
+		nodes[0] = new Node(element1);
 		nodes[1] = new Node(n4,n5,n6);
-		Beam3D beam = new Beam3D(nodes[0], nodes[1], material, crosec);
+		
+		
+		
+		Beam3D beam = new Beam3D(element1, element2, material, crosec);**/
+		
 	}
 	
 		

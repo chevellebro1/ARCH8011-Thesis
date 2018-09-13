@@ -2695,9 +2695,115 @@ public class karambaTest extends PApplet {
 			System.out.println(lic.error_msg());
 			System.exit(1);
 		}
+		
+		
+		//MATERIAL
+        double E = 210000; // MN/m2
+        double G = 80000; // MN/m2
+        double gamma = 78.5; // MN/m3
+        Material material = new Material(E,G,gamma);
+        material.swigCMemOwn = false;           
+        
+        //CROSSEC
+        double A = 0.05; // m2
+        double Iyy = 0.00001; // m4 moment of inertia about z axis
+        double Izz = 0.00001; // m4 moment of inertia about y axis
+        double Ipp = 0.003; // m4 torsional moment of inertia
+        double ky = 0.0; // rigid shear
+        double kz = 0.0; // rigid shear
+        Beam3DCroSec crosec = new Beam3DCroSec(A,Iyy,Izz,Ipp,ky,kz);
+        crosec.swigCMemOwn = false;
+        
+        
+        //NODES
+        ArrayList<Agent> points = new ArrayList<Agent>();
+        for(Agent a : agents) {
+               if(a.neighbors.size()>0) points.add(a);
+        }
+        feb.Node nodes[] = new Node[points.size()];
+        for(int i=0;i<points.size();i++) {
+               nodes[i] = new Node(points.get(i).x,points.get(i).y,points.get(i).z);//not sure what info the Node needs
+        }
+        
+        //ELEMENTS
+        ArrayList<ArrayList<feb.Node>> nodePairs = new ArrayList<ArrayList< feb.Node>>();
+        for (Agent a : points) {//loop through points, not agents
+               for (Agent n : a.neighbors) { //agents for neighbor
+                     if (a.index < n.index || n.neighbors.contains(a) == false) {//agents can have each other as neighbors. therefore in order to avoid duplicating elements, beams are only added if the index of a is smaller, or if the neighbor does not have the agent in its list of neighbors
+                            nodePairs.add(new ArrayList<feb.Node>(Arrays.asList(nodes.indexOf(a),nodes.indexOf(n))));
+                     }
+               }
+        }
+        Beam3D beams[] = new Beam3D[nodePairs.size()];
+        for(int i=0;i<nodePairs.size();i++) {
+               beams[i] = new Beam3D(nodePairs.get(0), nodePairs.get(1), material, crosec);
+        }
+
 
 			
 			
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 		//POINTS
 		
 		//POINTS OF AGENTS

@@ -381,6 +381,16 @@ public void export() {
 }
 
 
+public void debug() {
+	PrintWriter output = createWriter("debug.txt");
+	// agent variables
+	output.println();
+	
+	output.flush();
+	output.close();
+	
+}
+
 
 //Importers:
 public ArrayList<Vec3D> ImportPoints(String fileName){

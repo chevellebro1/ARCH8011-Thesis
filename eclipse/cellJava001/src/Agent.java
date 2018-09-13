@@ -56,6 +56,11 @@ class Agent extends Vec3D{
   ArrayList<Agent> neighborsClose = new ArrayList<Agent>();// neighbors
   ArrayList<Agent> neighborsFar = new ArrayList<Agent>();// neighbors
   ArrayList<Float> distances = new ArrayList<Float>();// distances to neighbors
+  
+  ArrayList<Agent> agents = new ArrayList<Agent>();
+  ArrayList<Agent> agentsNew = new ArrayList<Agent>();
+  ArrayList<Attractor> attractors = new ArrayList<Attractor>();
+  
   Agent agentClosest;//the closest Agent, required if no agent is a neighbor within range
   int countClose=0;// amount of close neighbors
   int index = 0;
@@ -88,9 +93,8 @@ class Agent extends Vec3D{
   float _facVelChild = ex._facVelChild;
   float _facVelParent = ex._facVelParent;
   float _rangeClose = ex._rangeClose;
-  ArrayList<Agent> agents;
-  ArrayList<Attractor> attractors;
-  ArrayList<Agent> agentsNew; 
+  
+
   
   
   //SETTINGS

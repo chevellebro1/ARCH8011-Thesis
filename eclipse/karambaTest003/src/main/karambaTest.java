@@ -88,8 +88,15 @@ public class karambaTest extends PApplet {
 	Agent element2;
 	float elementIA;
 	float elementIB;
+	int save;
 	
-	float debug;
+	String debug1;
+	Agent debug2;
+	Agent debug3;
+	int debug4;
+	int debug5;
+	
+	
 
 // VOXELS AND COMPONENTS
 	Voxelgrid voxelgrid = new Voxelgrid(0, new float[] { 2, 2, 2 });// voxelType: 0: reactangular; 1: pyramid; 2: triangular 3; gridsize should be larger than 0.1.
@@ -2508,9 +2515,17 @@ public class karambaTest extends PApplet {
 		agentSize = agents.size();
 		output.println();
 		
+		output.println(debug4);
+		output.println(debug5);
 		
-		output.println(debug);
-
+		output.println();
+		
+		output.println(debug1);
+		
+		output.println();
+		
+		output.println(debug2);
+		output.println(debug3);
 		
 		output.println();
 		
@@ -2728,6 +2743,8 @@ public class karambaTest extends PApplet {
 		
 		//INDEX TO BEAM (ELEMENTS)
 		
+		ArrayList<Agent> elementT = new ArrayList<Agent>();
+		
 		int n1 = 0;
 		int n2 = 0;
 		int n3 = 0;
@@ -2735,27 +2752,38 @@ public class karambaTest extends PApplet {
 		int n5 = 0;
 		int n6 = 0;
 		
+		
+		String element1x;
+		
+		
 		int i1 = agentIndex; //index of agent
 		int i2 = neighborIndex; //index of neighbor
 		
 		element1 = agents.get(i1); // element1 is point from agent
 		element2 = agents.get(i2); //element2 is point from neighbor
+
+		element1x = element1.toString();
 		
-		elementIA = element1.x();
-		elementIA = n1;
-		elementIA = element1.y();
-		elementIA = n2;
-		elementIA = element1.z();
-		elementIA = n3;
 		
-		elementIB = element2.x();
-		elementIA = n4;
-		elementIA = element2.y();
-		elementIA = n5;
-		elementIA = element2.z();
-		elementIA = n6;
 		
-		debug = n4;
+
+		
+		
+		
+		
+		
+		//DEBUG
+		
+		
+		debug1 = element1x;
+		debug2 = element2;
+		debug3 = element1;
+		debug4 = i1;
+		debug5 = i2;
+		
+		
+		
+		
 		
 		feb.Node nodes[] = new Node[2];
 		nodes[0] = new Node(n1,n2,n3);

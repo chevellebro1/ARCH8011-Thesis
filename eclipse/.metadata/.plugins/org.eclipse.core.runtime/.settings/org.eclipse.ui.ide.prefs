@@ -3,6 +3,7 @@ IMPORT_FILES_AND_FOLDERS_RELATIVE=true
 IMPORT_FILES_AND_FOLDERS_TYPE=23,4
 PROBLEMS_FILTERS_MIGRATE=true
 eclipse.preferences.version=1
+org.eclipse.ui.internal.views.markers.CachedMarkerBuilderorg.eclipse.ui.views.BookmarkView=<?xml version\="1.0" encoding\="UTF-8"?>\r\n<filterGroups andFilters\="false" markerLimit\="100" markerLimitEnabled\="true"/>
 platformState=1535648474614
 quickStart=false
 tipsAndTricks=true

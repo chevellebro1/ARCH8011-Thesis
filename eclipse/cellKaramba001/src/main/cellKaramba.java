@@ -78,15 +78,10 @@ public class cellKaramba extends PApplet {
 	
 	boolean getDisplacements = true;
 	int getDisplacementInterval = 50;
-	int timeoutKaramba = 2;// maximum seconds to wait for Karamba
-	int supportMin = (int) 1.4;
-	int agentIndex;
-	int neighborIndex;
-	int agentSize;
 	
 	
 // DEBUG
-	int debug1;
+	Vec3D debug1;
 	int debug2;
 	Agent debug3;
 	Agent debug4;
@@ -839,7 +834,7 @@ public class cellKaramba extends PApplet {
 		}
 
 		public void displayDisplacements() {
-			Vec3D p = this.add(displacement.scale((float) 0.25));
+			Vec3D p = this.add(displacement.scale(1));
 			strokeWeight(1);
 			stroke(125, 0, 100);
 			line(x, y, z, p.x, p.y, p.z);
@@ -2503,8 +2498,10 @@ public class cellKaramba extends PApplet {
 		output.println("AGENT VARIABLES");
 		
 		output.println();
+		
+		output.println(debug1);
 
-		output.println("f:"+ frameCount + " " + "a:" + agentSize);
+		output.println("f:"+ frameCount + " " + "a:" + agents.size());
 		output.flush();
 		output.close();
 	}
@@ -2750,14 +2747,16 @@ public class cellKaramba extends PApplet {
       	Deform analysis = new Deform(model);
 		Response response = new Response(analysis);
 		
+		
 		response.updateNodalDisplacements();
 		
 		
 		if(points.size()==response.model().Nodes().size()) {
-			for (int i = 0; i<points.size(); i++) {
+			for (int i = 0; i < points.size(); i++) {
 
-			Vec3d disp = response.model().Nodes().get(i).getDisplacement();
-			points.get(i).displacement = new Vec3D((float)disp.x(),(float)disp.y(),(float)disp.z());
+				Vec3d disp = response.model().Nodes().get(i).getDisplacement();
+				points.get(i).displacement = new Vec3D((float)disp.x(),(float)disp.y(),(float)disp.z());
+				
 			}
 		}
 	}

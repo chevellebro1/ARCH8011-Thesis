@@ -17,4 +17,5 @@
     <fullyQualifiedTypeName name="toxi.geom.Vec3D"/>
     <fullyQualifiedTypeName name="growthBase.Voxelgrid"/>
     <fullyQualifiedTypeName name="javax.swing.text.html.parser.Element"/>
+    <fullyQualifiedTypeName name="javaBase.Agent"/>
 </qualifiedTypeNameHistroy>

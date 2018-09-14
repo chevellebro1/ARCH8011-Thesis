@@ -12,6 +12,7 @@ import toxi.geom.*;
 import peasy.*;
 import feb.Beam3D;
 import feb.Beam3DCroSec;
+import feb.BoundaryCondition;
 import feb.Deform;
 import feb.License;
 import feb.Material;
@@ -77,18 +78,15 @@ public class karambaTest extends PApplet {
 	
 	
 	boolean getDisplacements = true;
-	int getDisplacementInterval = 50;
+	int getDisplacementInterval = 10;
 	int timeoutKaramba = 2;// maximum seconds to wait for Karamba
 	int supportMin = (int) 1.4;
 	int agentIndex;
 	int neighborIndex;
 	int agentSize;
-	Agent element1;
-	Agent element2;
-	float elementIA;
-	float elementIB;
-	int save;
 	
+	
+	//DEBUG
 	int debug1;
 	int debug2;
 	Agent debug3;
@@ -162,7 +160,7 @@ public class karambaTest extends PApplet {
 	boolean showVoxels = false;
 	boolean showComponents = false;
 	boolean printLength = false;
-	boolean showDisplacements = false;
+	boolean showDisplacements = true;
 
 	public void setup() {
 		println("starting ", name);
@@ -842,7 +840,7 @@ public class karambaTest extends PApplet {
 		}
 
 		public void displayDisplacements() {
-			Vec3D p = this.add(displacement.scale(1));
+			Vec3D p = this.add(displacement.scale((float) 0.25));
 			strokeWeight(1);
 			stroke(125, 0, 100);
 			line(x, y, z, p.x, p.y, p.z);
@@ -2715,7 +2713,7 @@ public class karambaTest extends PApplet {
         crosec.swigCMemOwn = false;
         
         
-        //NODES
+      //NODES
         ArrayList<Agent> points = new ArrayList<Agent>();
         for(Agent a : agents) {
                if(a.neighbors.size()>0) points.add(a);
@@ -2729,198 +2727,75 @@ public class karambaTest extends PApplet {
         ArrayList<ArrayList<feb.Node>> nodePairs = new ArrayList<ArrayList< feb.Node>>();
         for (Agent a : points) {//loop through points, not agents
                for (Agent n : a.neighbors) { //agents for neighbor
-                     if (a.index < n.index || n.neighbors.contains(a) == false) {//agents can have each other as neighbors. therefore in order to avoid duplicating elements, beams are only added if the index of a is smaller, or if the neighbor does not have the agent in its list of neighbors
-                            nodePairs.add(new ArrayList<feb.Node>(Arrays.asList(nodes.indexOf(a),nodes.indexOf(n))));
+                     if (a.index < n.index || n.neighbors.contains(a) == false) {//agents can have each other as neighbors. therefore in order to avoid duplicating elements, beams are only added if the index of a is smaller, or if the neighbor does not have the agent in its list of neighbors   
+                    	 nodePairs.add(new ArrayList<feb.Node>(Arrays.asList(nodes[points.indexOf(a)],nodes[points.indexOf(n)])));
                      }
                }
         }
         Beam3D beams[] = new Beam3D[nodePairs.size()];
         for(int i=0;i<nodePairs.size();i++) {
-               beams[i] = new Beam3D(nodePairs.get(0), nodePairs.get(1), material, crosec);
+        	beams[i] = new Beam3D(nodePairs.get(i).get(0), nodePairs.get(i).get(1), material, crosec);
         }
 
-
-			
-			
+        
+      //LOAD
 		
+      	Vec3d f = new Vec3d(0.0,0.0,-1.0);
+      	LoadPoint load = new LoadPoint(f);
+      		
+      //ASSEMBLE (MODEL)
 		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		//POINTS
-		
-		//POINTS OF AGENTS
-		for (Agent a : agents) { //agents list
-			if (a.neighbors.size() > 0) { //if agents neighbors larger than 0
-				agentsDisconnected.add(a); //add agents to new list
-			}
+      	Model model = new Model();
+      	for (Node node : nodes) {
+      		node.swigCMemOwn = false;
+    		model.add(node);
+      	}
+      		
+      	model.add(material);
+      	model.add(crosec);
+      		
+      	for (Beam3D beam : beams) {
+      		beam.swigCMemOwn = false;
+      		model.add(beam);
+      	}
+      	
+      	ArrayList<BoundaryCondition> bcs = new ArrayList<BoundaryCondition>();
+      	
+      	
+      	for (int i = 0; i<points.size(); i++) {
+      		if(points.get(i).z < 2) {
+      			bcs.add(new BoundaryCondition(i, Node.DOF.x_t, BoundaryCondition.BCType.disp, 0));
+      			bcs.add(new BoundaryCondition(i, Node.DOF.y_t, BoundaryCondition.BCType.disp, 0));
+      			bcs.add(new BoundaryCondition(i, Node.DOF.z_t, BoundaryCondition.BCType.disp, 0));
+      			bcs.add(new BoundaryCondition(i, Node.DOF.x_r, BoundaryCondition.BCType.disp, 0));
+      			bcs.add(new BoundaryCondition(i, Node.DOF.y_r, BoundaryCondition.BCType.disp, 0));
+      			bcs.add(new BoundaryCondition(i, Node.DOF.z_r, BoundaryCondition.BCType.disp, 0));
+      		} else {
+      			bcs.add(new BoundaryCondition(i, Node.DOF.z_t, BoundaryCondition.BCType.force, -1));
+      		}
+      	}
+      
+      	for (BoundaryCondition bc : bcs) {
+			bc.swigCMemOwn = false;
+			model.add(bc);
 		}
-			
-		//INDEX OF POINTS
-		agentIndex = 0;
-		neighborIndex = 0;
-
-		for (Agent a : agents) {// beams
-			for (Agent n : a.neighbors) { //agents for neighbor
-				if (n.neighbors.contains(a) == false || a.index < n.index) { //if agents have less than neighbors
-					agentIndex = agents.indexOf(a);
-					neighborIndex = agents.indexOf(n);
-					agentsIA.add(agentIndex);
-					agentsIB.add(neighborIndex);
-				}
-			}
-		}
-			
-		//MATERIAL
-			
-		double E = 210000; // MN/m2
-		double G = 80000; // MN/m2
-		double gamma = 78.5; // MN/m3
-		Material material = new Material(E,G,gamma);
-		material.swigCMemOwn = false;		
-			
-		//CROSSEC
-		double A = 0.05; // m2
-		double Iyy = 0.00001; // m4 moment of inertia about z axis
-		double Izz = 0.00001; // m4 moment of inertia about y axis
-		double Ipp = 0.003; // m4 torsional moment of inertia
-		double ky = 0.0; // rigid shear
-		double kz = 0.0; // rigid shear
-		Beam3DCroSec crosec = new Beam3DCroSec(A,Iyy,Izz,Ipp,ky,kz);
-		crosec.swigCMemOwn = false;
-		
-		
-		//INDEX TO BEAM (ELEMENTS)
-		
-		int i1 = agentIndex; //index of agent
-		int i2 = neighborIndex; //index of neighbor
-		
-		element1 = agents.get(i1); // element1 is point from agent
-		element2 = agents.get(i2); //element2 is point from neighbor
-		
-		
-		
-		//DEBUG
-        debug1 = i1;
-        debug2 = i2;
-        debug3 = element1;
-        debug4 = element2;
-        
-        
-        
-        
-        
-        
-		/*feb.Node nodes[] = new Node[2];
-		nodes[0] = new Node(element1);
-		nodes[1] = new Node(n4,n5,n6);
-		
-		
-		
-		Beam3D beam = new Beam3D(element1, element2, material, crosec);**/
-		
-	}
-	
-		
-		/*
-		
-		//SUPPORT
-		
-		for(Agent a : agents) {
-			if(a.z < supportMin) {
-				agents = new ArrayList<Agent>(agents.subList(0, supportMin));
-			} else {
-				
-			}
-		}
-		
-		//LOAD
-		
-		Vec3d f = new Vec3d(0.0,0.0,1.0);
-		LoadPoint load = new LoadPoint(f);
-	
-				
-		
-		//ASSEMBLE (MODEL)
-		
-		Model model = new Model();
-		for (Node node : nodes) {
-			node.swigCMemOwn = false;
-			model.add(node);
-		}
-		
-		model.add(material);
-		model.add(crosec);
-		model.add(beam);
-		
-		//ANALYZE
-		Deform analysis = new Deform(model);
+      	
+      	
+      	Deform analysis = new Deform(model);
 		Response response = new Response(analysis);
 		
-		//DISPLAY
-
-		ArrayList<Vec3D> displacements = new ArrayList<Vec3D>();
-	}
+		response.updateNodalDisplacements();
 		
-**/
-	
+		
+		if(points.size()==response.model().Nodes().size()) {
+			for (int i = 0; i<points.size(); i++) {
+
+			Vec3d disp = response.model().Nodes().get(i).getDisplacement();
+			points.get(i).displacement = new Vec3D((float)disp.x(),(float)disp.y(),(float)disp.z());
+			}
+		}
+	}
+      	
 
 	static public void main(String[] passedArgs) {
 		String[] appletArgs = new String[] { "main.karambaTest" };
@@ -2931,96 +2806,3 @@ public class karambaTest extends PApplet {
 		}
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//GRASSHOPPER
-
-
-
-//OUTPUT
-/*
-ArrayList<Agent> agentsDisconnected = new ArrayList<Agent>(); //new array list
-PrintWriter output = createWriter("input/Processing_Karamba.txt"); //output address
-output.println(agents.size()); //output ArrayList<Agent> size
-for (Agent a : agents) {
-	if (a.neighbors.size() > 0)
-		output.println(a.x + "," + a.y + "," + a.z); //output ArrayList<Agents> points
-	else
-		agentsDisconnected.add(a);
-}
-for (Agent a : agents) {// beams
-	for (Agent n : a.neighbors) { //agents for neighbor and agents
-		if (n.neighbors.contains(a) == false || a.index < n.index) //if agents have less than neighbors
-			output.println(agents.indexOf(a) + "_" + agents.indexOf(n)); //print index of agents & neighbors
-	}
-}
-output.flush(); //clear output files
-output.close(); //close output task
-File file = new File(sketchPath("") + "input/Processing_Karamba.txt"); //output address
-long lastModified = file.lastModified(); //last modified information
-file = new File(sketchPath("") + "input/Karamba_Processing.txt"); //output address
-while (true) {
-	if (file.exists()) {
-		if (file.lastModified() > lastModified) //if last modified is older than current continue
-			break;
-	}
-	if ((new Date()).getTime() > lastModified + timeoutKaramba * 1000) { //if last modified is older than current TIMEOUT
-		println("TIMEOUT for GH Karamba");
-		if (frameCount == getDisplacementInterval) {
-			println("getDisplacements turned off");
-			getDisplacements = false;
-		}
-		return;
-	}
-	try {
-		Thread.sleep(1000);
-	} catch (InterruptedException e) {
-		println("sleep interrupted");
-	}
-}
-
-**/
-
-
-
-//INPUT
-/*
-ArrayList<Vec3D> displacements = ImportPoints("input/Karamba_Processing.txt"); //import updated points
-if (agents.size() - agentsDisconnected.size() != displacements.size()) {
-	println("ERROR getDisplacements(): agents.size()-agentsDisconnected.size():",
-			agents.size() - agentsDisconnected.size(), " displacements.size():", displacements.size());
-	return;
-}
-if (agentsDisconnected.size() > 0)
-	println("disconnected agents not implemented yet!p");
-for (int i = 0; i < agents.size(); i++)
-	agents.get(i).displacement = displacements.get(i);
-println("displacements imported:", displacements.size()); //display imported size of agents
-}
-
-
-**/

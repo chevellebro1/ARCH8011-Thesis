@@ -39,7 +39,7 @@
 	</section>
 	<section name="ImportExportAction">
 		<item value="org.eclipse.ui.wizards.export.ZipFile" key="ImportExportPage.STORE_SELECTED_EXPORT_WIZARD_ID"/>
-		<item value="org.eclipse.ui.wizards.import.FileSystem" key="ImportExportPage.STORE_SELECTED_IMPORT_WIZARD_ID"/>
+		<item value="org.eclipse.ui.wizards.import.ExternalProject" key="ImportExportPage.STORE_SELECTED_IMPORT_WIZARD_ID"/>
 		<list key="ImportExportPage.STORE_EXPANDED_IMPORT_CATEGORIES">
 			<item value="org.eclipse.ui.Basic"/>
 		</list>
@@ -83,6 +83,7 @@
 		<item value="true" key="WizardZipFileResourceExportPage1.STORE_COMPRESS_CONTENTS_ID"/>
 		<item value="true" key="WizardZipFileResourceExportPage1.STORE_CREATE_STRUCTURE_ID"/>
 		<list key="WizardZipFileResourceExportPage1.STORE_DESTINATION_NAMES_ID">
+			<item value="K:\University of Cincinnati\2019 Thesis Year\Thesis Studio 8009\Processing\eclipse\archive\karambaTest003.zip"/>
 			<item value="K:\University of Cincinnati\2019 Thesis Year\Thesis Studio 8009\Processing\eclipse\archive\cellBase06.zip"/>
 			<item value="K:\University of Cincinnati\2019 Thesis Year\Thesis Studio 8009\Processing\eclipse\archive\cellBase05.zip"/>
 		</list>

@@ -77,7 +77,7 @@ public class cellKaramba extends PApplet {
 	
 	
 	boolean getDisplacements = true;
-	int getDisplacementInterval = 50;
+	int getDisplacementInterval = 8;
 	
 	
 // DEBUG
@@ -154,7 +154,7 @@ public class cellKaramba extends PApplet {
 	boolean showVoxels = false;
 	boolean showComponents = false;
 	boolean printLength = false;
-	boolean showDisplacements = true;
+	boolean showDisplacements = false;
 
 	public void setup() {
 		println("starting ", name);
@@ -318,7 +318,7 @@ public class cellKaramba extends PApplet {
 			acc.addSelf(forceStrata(facStrata));// pull each cell into parallel planes
 			acc.addSelf(forceOrthogonal(facOrthogonal));// pull each cell into orthogonal planes
 			acc.addSelf(unary);// unary force
-			acc.addSelf(followMesh(facFollowMesh));// pull towards the mesh
+			//acc.addSelf(followMesh(facFollowMesh));// pull towards the mesh
 			acc.addSelf(forceVoxel(facVoxel));// pull towards the closest voxel
 
 			// CONSTRAIN POSITION
@@ -834,10 +834,13 @@ public class cellKaramba extends PApplet {
 		}
 
 		public void displayDisplacements() {
-			Vec3D p = this.add(displacement.scale(1));
+			//Vec3D p = this.add(displacement.scale(1));
+			Vec3D p = this.add(displacement.normalize()); // Set all length to 0
+			Vec3D p2 = this.add(displacement);
 			strokeWeight(1);
 			stroke(125, 0, 100);
 			line(x, y, z, p.x, p.y, p.z);
+			debug1 = p2;
 		}
 
 	}
@@ -2500,6 +2503,8 @@ public class cellKaramba extends PApplet {
 		output.println();
 		
 		output.println(debug1);
+		
+		output.println();
 
 		output.println("f:"+ frameCount + " " + "a:" + agents.size());
 		output.flush();
@@ -2644,6 +2649,7 @@ public class cellKaramba extends PApplet {
 		return collection;
 	}
 
+	
 	
 
 	

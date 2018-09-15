@@ -299,8 +299,7 @@ public class cellKaramba extends PApplet {
 				col = new int[] { 0, PApplet.parseInt(age * 0.5f), age };
 			findNeighbors();
 			normal = findNormal();
-			
-			Vec3D rev = this.add(displacement);
+		
 
 			// CELL FORCES
 			acc.addSelf(forcePoint(neighborsClose, facNeighborsClose, _rangeClose));// repelling point force between

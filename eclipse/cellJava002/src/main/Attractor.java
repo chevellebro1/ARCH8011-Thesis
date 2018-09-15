@@ -1,8 +1,7 @@
 package main;
 
-import toxi.geom.Vec3D;
 import processing.core.PApplet;
-
+import toxi.geom.Vec3D;
 
 /**
  * Cell Growth Simulation
@@ -25,19 +24,20 @@ import processing.core.PApplet;
  */
 
 class Attractor extends Vec3D {
-
-	// VARIABLES
-	float strength;
-	float radius = 0;// radius of the attractor
-	int exponent = 0;// exponent to have the attractor act differently according to distance
-	boolean[] activeDir = new boolean[] { true, true, true };// can be set to false in order to make a line attractor or a surface attractor
-	int[] col;// color of the attractor
 	
 	PApplet parent;
 	
 	Attractor(PApplet p){
 		parent = p;
 	}
+
+	// VARIABLES
+	float strength;
+	float radius = 0;// radius of the attractor
+	int exponent = 0;// exponent to have the attractor act differently according to distance
+	boolean[] activeDir = new boolean[] { true, true, true };// can be set to false in order to make a line
+																// attractor or a surface attractor
+	int[] col;// color of the attractor
 
 	// CONSTRUCTOR
 	Attractor(Vec3D _pos, float _strength) {

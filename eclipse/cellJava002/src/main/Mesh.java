@@ -2,8 +2,11 @@ package main;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import main.cellKaramba.Edge;
+import main.cellKaramba.Face;
+import main.cellKaramba.Vertex;
 import processing.core.PApplet;
-import processing.core.PConstants;
 import toxi.geom.Vec3D;
 
 /**
@@ -26,29 +29,28 @@ import toxi.geom.Vec3D;
  *         unpublished an non-commercial applications.
  */
 
+
 class Mesh {
 
-	ArrayList<Vertex> vertices;
-	ArrayList<Face> faces;
-	ArrayList<Edge> edges;
-	
 	PApplet parent;
-	
-	cellKaramba mesh = new cellKaramba();
 	
 	Mesh(PApplet p){
 		parent = p;
 	}
 
+	ArrayList<Vertex> vertices;
+	ArrayList<Face> faces;
+	ArrayList<Edge> edges;
+
 	Mesh(String fileName) {
 		vertices = new ArrayList<Vertex>();
 		faces = new ArrayList<Face>();
 		edges = new ArrayList<Edge>();
-		//importFile(fileName);
+		importFile(fileName);
 	}
 
-	/*public void importFile(String fileName) {
-		String[] fileLines = loadStrings(fileName);
+	public void importFile(String fileName) {
+		String[] fileLines = parent.loadStrings(fileName);
 		// check file details
 		int lineVertex = 0;
 		int lineFace = 0;
@@ -120,7 +122,7 @@ class Mesh {
 		// if(faces.size()!=countFaces) println("ERROR Mesh import faces:
 		// countFaces=",countFaces," imported:",faces.size());
 		PApplet.println("mesh ", fileName, " imported. v", vertices.size(), " e", edges.size(), " f", faces.size());
-	}**/
+	}
 
 	public Vertex getClosestVertex(Vec3D point) {
 		Vertex closest = null;// the closest vertex among cv's neighbors
@@ -235,7 +237,7 @@ class Mesh {
 				parent.popMatrix();
 
 				Vec3D p0 = e.vertices.get(0);
-				float colorValue = mesh.meshFollow.getClosestVertex(p0).colValue;
+				float colorValue = meshFollow.getClosestVertex(p0).colValue;
 				Vec3D vec2 = new Vec3D(10, 20, colorValue * 20);
 				vec2.scaleSelf(diameter);
 				Vec3D p2 = p0.add(vec2);
@@ -260,13 +262,13 @@ class Mesh {
 			parent.fill(f.col[0], f.col[1], f.col[2], 50);
 			parent.noStroke();
 			if (f.vertices.size() == 3) {
-				parent.beginShape(PConstants.TRIANGLES);
+				parent.beginShape(PApplet.TRIANGLES);
 				parent.vertex(f.vertices.get(0).x, f.vertices.get(0).y, f.vertices.get(0).z);
 				parent.vertex(f.vertices.get(1).x, f.vertices.get(1).y, f.vertices.get(1).z);
 				parent.vertex(f.vertices.get(2).x, f.vertices.get(2).y, f.vertices.get(2).z);
 				parent.endShape();
 			} else if (f.vertices.size() == 4) {
-				parent.beginShape(PConstants.QUAD);
+				parent.beginShape(PApplet.QUAD);
 				parent.vertex(f.vertices.get(0).x, f.vertices.get(0).y, f.vertices.get(0).z);
 				parent.vertex(f.vertices.get(1).x, f.vertices.get(1).y, f.vertices.get(1).z);
 				parent.vertex(f.vertices.get(2).x, f.vertices.get(2).y, f.vertices.get(2).z);
@@ -274,139 +276,5 @@ class Mesh {
 				parent.endShape();
 			}
 		}
-	}
-}
-
-class Vertex extends Vec3D {
-
-	int index;
-	Mesh mesh;
-	ArrayList<Vertex> vertices;// neighbouring vertices
-	ArrayList<Edge> edges;
-	ArrayList<Face> faces;
-	Vec3D normal;
-	int[] col;
-	float colValue;
-
-	Vertex(Vec3D _pos, Vec3D _normal, int[] _col, Mesh _mesh) {
-		super(_pos);
-		normal = _normal;
-		col = _col;
-		colValue = PApplet.parseFloat(col[0] + col[1] + col[2]) / PApplet.parseFloat(255 + 255 + 255);
-		normal.normalize();
-		mesh = _mesh;
-		index = mesh.vertices.size();
-		mesh.vertices.add(this);
-		vertices = new ArrayList<Vertex>();
-		edges = new ArrayList<Edge>();
-		faces = new ArrayList<Face>();
-	}
-
-	public void computeNormal() {
-		normal = new Vec3D();
-		for (Face f : faces)
-			normal.addSelf(f.normal);
-		normal.normalize();
-	}
-
-	public Edge edge(Vertex other) {
-		// returns the edge that corresponds to the other vertex
-		return edges.get(vertices.indexOf(other));
-	}
-
-}
-
-class Edge {
-
-	int index;
-	Mesh mesh;
-	ArrayList<Vertex> vertices;
-	ArrayList<Face> faces;
-	int[] col;
-	float colValue;
-	int countTrails;
-
-	Edge(int i1, int i2, Mesh _mesh) {
-		mesh = _mesh;
-		Vertex v1 = mesh.vertices.get(i1);
-		Vertex v2 = mesh.vertices.get(i2);
-		faces = new ArrayList<Face>();
-		index = mesh.edges.size();
-		mesh.edges.add(this);
-		countTrails = 0;
-		vertices = new ArrayList<Vertex>();
-		vertices.add(v1);
-		vertices.add(v2);
-		v1.edges.add(this);
-		v2.edges.add(this);
-		v1.vertices.add(v2);
-		v2.vertices.add(v1);
-		col = new int[] { PApplet.parseInt((vertices.get(0).col[0] + vertices.get(1).col[0]) * 0.5f),
-				PApplet.parseInt((vertices.get(0).col[1] + vertices.get(1).col[1]) * 0.5f),
-				PApplet.parseInt((vertices.get(0).col[2] + vertices.get(1).col[2]) * 0.5f) };
-		colValue = col[0] + col[1] + col[2] / (255 + 255 + 255);
-	}
-
-	public Vec3D mid() {
-		return vertices.get(0).add(vertices.get(1)).scale(0.5f);
-	}
-
-	public float length() {
-		return vertices.get(0).distanceTo(vertices.get(1));
-	}
-}
-
-class Face {
-
-	int index;
-	Mesh mesh;
-	ArrayList<Vertex> vertices;
-	ArrayList<Edge> edges;
-	Vec3D normal;
-	int[] col;
-	float colValue;
-
-	Face(int[] indices, Mesh _mesh) {
-		mesh = _mesh;
-		index = mesh.faces.size();
-		mesh.faces.add(this);
-		vertices = new ArrayList<Vertex>();
-		edges = new ArrayList<Edge>();
-		for (int v : indices)
-			vertices.add(mesh.vertices.get(v));
-		for (Vertex v : vertices)
-			v.faces.add(this);
-		for (int i = 0; i < indices.length; i++) {
-			Vertex v1 = vertices.get(i);
-			Vertex v2 = vertices.get((i - 1 + indices.length) % indices.length);
-			Edge edge = null;
-			if (v2.vertices.contains(v1)) {
-				for (Edge e : v2.edges) {
-					if (e.vertices.contains(v1))
-						edge = e;
-				}
-			} else
-				edge = new Edge(v1.index, v2.index, mesh);
-			if (edge != null) {
-				edges.add(edge);
-				edge.faces.add(this);
-			} else
-				PApplet.println("ERROR mesh import from txt");
-		}
-		// normal
-		Vec3D e1 = vertices.get(1).sub(vertices.get(0));
-		Vec3D e2 = vertices.get(2).sub(vertices.get(0));
-		normal = e1.cross(e2).normalize();
-		// color
-		col = new int[] { 0, 0, 0 };
-		for (Vertex v : vertices) {
-			col[0] += v.col[0];
-			col[1] += v.col[1];
-			col[2] += v.col[2];
-		}
-		col[0] = PApplet.parseInt(col[0] / vertices.size());
-		col[1] = PApplet.parseInt(col[1] / vertices.size());
-		col[2] = PApplet.parseInt(col[2] / vertices.size());
-		colValue = col[0] + col[1] + col[2] / (255 + 255 + 255);
 	}
 }

@@ -324,7 +324,7 @@ public class cellKaramba extends PApplet {
 			acc.addSelf(forceVoxel(facVoxel));// pull towards the closest voxel
 
 			// CONSTRAIN POSITION
-			bounce((float) 0.0);
+			bounce((float) 2.0);
 
 			// DIVIDE
 			if (age > minAge) {

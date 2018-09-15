@@ -68,20 +68,14 @@ public class cellKaramba extends PApplet {
 	boolean loaded = false;
 	ArrayList<Agent> agents = new ArrayList<Agent>();
 	ArrayList<Agent> agentsNew = new ArrayList<Agent>();
-	ArrayList<Agent> agentsDisconnected = new ArrayList<Agent>(); //new array list
-	ArrayList<Agent> agentsIndex = new ArrayList<Agent>(); // agent index
 	ArrayList<Attractor> attractors = new ArrayList<Attractor>();
-	
-	ArrayList<Integer> agentsIA = new ArrayList<Integer>();
-	ArrayList<Integer> agentsIB = new ArrayList<Integer>();
-	
-	
+		
 	boolean getDisplacements = true;
 	int getDisplacementInterval = 8;
 	
 	
 // DEBUG
-	Vec3D debug1;
+	float debug1;
 	int debug2;
 	Agent debug3;
 	Agent debug4;
@@ -156,7 +150,7 @@ public class cellKaramba extends PApplet {
 	boolean printLength = false;
 	boolean showDisplacements = false;
 	boolean variable = false;
-	boolean debug = false;
+	boolean debug = true;
 
 	public void setup() {
 		println("starting ", name);
@@ -305,6 +299,8 @@ public class cellKaramba extends PApplet {
 				col = new int[] { 0, PApplet.parseInt(age * 0.5f), age };
 			findNeighbors();
 			normal = findNormal();
+			
+			Vec3D rev = this.add(displacement);
 
 			// CELL FORCES
 			acc.addSelf(forcePoint(neighborsClose, facNeighborsClose, _rangeClose));// repelling point force between
@@ -2379,6 +2375,8 @@ public class cellKaramba extends PApplet {
 				println("component length:", ceil(voxelgrid.componentLength(0.04f)));
 				printLength = false;
 			}
+			
+			debugPrint();
 		}
 	}
 	
@@ -2487,14 +2485,19 @@ public class cellKaramba extends PApplet {
 			
 			response.updateNodalDisplacements();
 			
-			
 			if(points.size()==response.model().Nodes().size()) {
 				for (int i = 0; i < points.size(); i++) {
 
 					Vec3d disp = response.model().Nodes().get(i).getDisplacement();
 					points.get(i).displacement = new Vec3D((float)disp.x(),(float)disp.y(),(float)disp.z());
-					
 				}
+			}
+			
+			for (int i = 0; i < points.size(); i++) {
+				float mag = 0;
+				mag = points.get(i).magnitude();
+				
+				debug1 = mag;
 			}
 		}
 	}
@@ -2617,7 +2620,6 @@ public class cellKaramba extends PApplet {
 //PRINT DEBUG VARIABLES
 	public void debugPrint() {
 		PrintWriter output = createWriter("debug.txt");
-		// agent variables
 		output.println("AGENT VARIABLES");
 		
 		output.println();

@@ -17,11 +17,10 @@ import toxi.geom.Vec3D;
 
 public class Karamba {
 	
-	ArrayList<Agent> agents;
-		
 	public void getDisplacements() {
 		
-		agents = new ArrayList<Agent>();
+		cellKaramba cell = new cellKaramba();
+		
 	
 		System.load(
 				"K:/University of Cincinnati/2019 Thesis Year/Thesis Studio 8009/Processing/karamba/Java/64bit/Cantilever/karambaJAVA.dll");
@@ -55,7 +54,7 @@ public class Karamba {
         
       //NODES
         ArrayList<Agent> points = new ArrayList<Agent>();
-        for(Agent a : agents) {
+        for(Agent a : cell.agents) {
                if(a.neighbors.size()>0) points.add(a);
         }
         feb.Node nodes[] = new Node[points.size()];

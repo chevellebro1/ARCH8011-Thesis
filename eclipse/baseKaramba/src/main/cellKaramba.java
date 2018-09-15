@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.io.File;
 import java.io.PrintWriter;
 
-public class baseKaramba extends PApplet {
+public class cellKaramba extends PApplet {
 
 	/**
 	 * Cell Growth Simulation
@@ -77,19 +77,11 @@ public class baseKaramba extends PApplet {
 	
 	
 	boolean getDisplacements = true;
-	int getDisplacementInterval = 50;
-	int timeoutKaramba = 2;// maximum seconds to wait for Karamba
-	int supportMin = (int) 1.4;
-	int agentIndex;
-	int neighborIndex;
-	int agentSize;
-	Agent element1;
-	Agent element2;
-	float elementIA;
-	float elementIB;
-	int save;
+	int getDisplacementInterval = 8;
 	
-	int debug1;
+	
+// DEBUG
+	Vec3D debug1;
 	int debug2;
 	Agent debug3;
 	Agent debug4;
@@ -162,7 +154,9 @@ public class baseKaramba extends PApplet {
 	boolean showVoxels = false;
 	boolean showComponents = false;
 	boolean printLength = false;
-	boolean showDisplacements = true;
+	boolean showDisplacements = false;
+	boolean variable = false;
+	boolean debug = false;
 
 	public void setup() {
 		println("starting ", name);
@@ -326,11 +320,11 @@ public class baseKaramba extends PApplet {
 			acc.addSelf(forceStrata(facStrata));// pull each cell into parallel planes
 			acc.addSelf(forceOrthogonal(facOrthogonal));// pull each cell into orthogonal planes
 			acc.addSelf(unary);// unary force
-			acc.addSelf(followMesh(facFollowMesh));// pull towards the mesh
+			//acc.addSelf(followMesh(facFollowMesh));// pull towards the mesh
 			acc.addSelf(forceVoxel(facVoxel));// pull towards the closest voxel
 
 			// CONSTRAIN POSITION
-			// bounce(0.0);
+			bounce((float) 2.0);
 
 			// DIVIDE
 			if (age > minAge) {
@@ -344,11 +338,7 @@ public class baseKaramba extends PApplet {
 					if (distanceAverage > rangeDivide) {
 						Vec3D posNew = this;// position of the child cell
 						posNew.addSelf(new Vec3D(random(-offsetDivision, offsetDivision),
-								random(-offsetDivision, offsetDivision), random(-offsetDivision, offsetDivision)));// random
-																													// offset
-																													// within
-																													// a
-																													// range
+								random(-offsetDivision, offsetDivision), random(-offsetDivision, offsetDivision)));// random offsets												
 						Vec3D velNew = vel.scale(facVelChild);// velocity of the child cell
 						Agent agentNew = new Agent(posNew, velNew);
 						agentNew.displacement = displacement;
@@ -842,7 +832,8 @@ public class baseKaramba extends PApplet {
 		}
 
 		public void displayDisplacements() {
-			Vec3D p = this.add(displacement.scale((float) 0.25));
+			//Vec3D p = this.add(displacement.scale(1));
+			Vec3D p = this.add(displacement.normalize()); // Set all length to 1
 			strokeWeight(1);
 			stroke(125, 0, 100);
 			line(x, y, z, p.x, p.y, p.z);
@@ -2283,6 +2274,8 @@ public class baseKaramba extends PApplet {
 	 *         information contained herein for their personal, confidential,
 	 *         unpublished an non-commercial applications.
 	 */
+	
+	Karamba karamba = new Karamba();
 
 	public synchronized void draw() {
 
@@ -2297,7 +2290,7 @@ public class baseKaramba extends PApplet {
 
 			if (run == true) {
 				if (getDisplacements && frameCount % getDisplacementInterval == 0)
-					getDisplacements();// read from GH Karamba
+					karamba.getDisplacements();// read from GH Karamba
 				// for(Agent a:agents) a.findNeighbors();
 				for (Agent a : agents)
 					a.move();
@@ -2305,7 +2298,14 @@ public class baseKaramba extends PApplet {
 					a.update();
 				agents.addAll(agentsNew);
 				agentsNew.clear();
-				//saveVariables();
+				if (variable == true) {
+					saveVariables();
+				}
+				if (debug == true) {
+					debugPrint();
+				}
+				
+				
 			}
 
 			// pushMatrix();//for rotation of the model
@@ -2379,8 +2379,123 @@ public class baseKaramba extends PApplet {
 				println("component length:", ceil(voxelgrid.componentLength(0.04f)));
 				printLength = false;
 			}
+		}
+	}
+	
+	public class Karamba {
+	
+	//GET DISPLACEMENTS FROM KARAMBA
+	
+			public void getDisplacements() {
+
+			System.load(
+					"K:/University of Cincinnati/2019 Thesis Year/Thesis Studio 8009/Processing/karamba/Java/64bit/Cantilever/karambaJAVA.dll");
+
+			// Load the license
+			License lic = License.Instance();
+			lic.loadLicense("license.lic", "public.key");
+			if (lic.error_flg()) {
+				System.out.println(lic.error_msg());
+				System.exit(1);
+			}
 			
-			debugPrint();
+			
+			//MATERIAL
+	        double E = 210000; // MN/m2
+	        double G = 80000; // MN/m2
+	        double gamma = 78.5; // MN/m3
+	        Material material = new Material(E,G,gamma);
+	        material.swigCMemOwn = false;           
+	        
+	        //CROSSEC
+	        double A = 0.05; // m2
+	        double Iyy = 0.00001; // m4 moment of inertia about z axis
+	        double Izz = 0.00001; // m4 moment of inertia about y axis
+	        double Ipp = 0.003; // m4 torsional moment of inertia
+	        double ky = 0.0; // rigid shear
+	        double kz = 0.0; // rigid shear
+	        Beam3DCroSec crosec = new Beam3DCroSec(A,Iyy,Izz,Ipp,ky,kz);
+	        crosec.swigCMemOwn = false;
+	        
+	        
+	      //NODES
+	        ArrayList<Agent> points = new ArrayList<Agent>();
+	        for(Agent a : agents) {
+	               if(a.neighbors.size()>0) points.add(a);
+	        }
+	        feb.Node nodes[] = new Node[points.size()];
+	        for(int i=0;i<points.size();i++) {
+	               nodes[i] = new Node(points.get(i).x,points.get(i).y,points.get(i).z);//not sure what info the Node needs
+	        }
+	        
+	        //ELEMENTS
+	        ArrayList<ArrayList<feb.Node>> nodePairs = new ArrayList<ArrayList< feb.Node>>();
+	        for (Agent a : points) {//loop through points, not agents
+	               for (Agent n : a.neighbors) { //agents for neighbor
+	                     if (a.index < n.index || n.neighbors.contains(a) == false) {//agents can have each other as neighbors. therefore in order to avoid duplicating elements, beams are only added if the index of a is smaller, or if the neighbor does not have the agent in its list of neighbors   
+	                    	 nodePairs.add(new ArrayList<feb.Node>(Arrays.asList(nodes[points.indexOf(a)],nodes[points.indexOf(n)])));
+	                     }
+	               }
+	        }
+	        Beam3D beams[] = new Beam3D[nodePairs.size()];
+	        for(int i=0;i<nodePairs.size();i++) {
+	        	beams[i] = new Beam3D(nodePairs.get(i).get(0), nodePairs.get(i).get(1), material, crosec);
+	        }
+
+	      		
+	      //ASSEMBLE (MODEL)
+			
+	      	Model model = new Model();
+	      	for (Node node : nodes) {
+	      		node.swigCMemOwn = false;
+	    		model.add(node);
+	      	}
+	      		
+	      	model.add(material);
+	      	model.add(crosec);
+	      		
+	      	for (Beam3D beam : beams) {
+	      		beam.swigCMemOwn = false;
+	      		model.add(beam);
+	      	}
+	      	
+	      	ArrayList<BoundaryCondition> bcs = new ArrayList<BoundaryCondition>();
+	      	
+	      	
+	      	for (int i = 0; i<points.size(); i++) {
+	      		if(points.get(i).z < 1) {
+	      			bcs.add(new BoundaryCondition(i, Node.DOF.x_t, BoundaryCondition.BCType.disp, 0));
+	      			bcs.add(new BoundaryCondition(i, Node.DOF.y_t, BoundaryCondition.BCType.disp, 0));
+	      			bcs.add(new BoundaryCondition(i, Node.DOF.z_t, BoundaryCondition.BCType.disp, 0));
+	      			bcs.add(new BoundaryCondition(i, Node.DOF.x_r, BoundaryCondition.BCType.disp, 0));
+	      			bcs.add(new BoundaryCondition(i, Node.DOF.y_r, BoundaryCondition.BCType.disp, 0));
+	      			bcs.add(new BoundaryCondition(i, Node.DOF.z_r, BoundaryCondition.BCType.disp, 0));
+	      		} else {
+	      			bcs.add(new BoundaryCondition(i, Node.DOF.z_t, BoundaryCondition.BCType.force, -1));
+	      		}
+	      	}
+	      
+	      	for (BoundaryCondition bc : bcs) {
+				bc.swigCMemOwn = false;
+				model.add(bc);
+			}
+	      	
+	      	
+	      	Deform analysis = new Deform(model);
+			Response response = new Response(analysis);
+			
+			
+			response.updateNodalDisplacements();
+			
+			
+			if(points.size()==response.model().Nodes().size()) {
+				for (int i = 0; i < points.size(); i++) {
+
+					Vec3d disp = response.model().Nodes().get(i).getDisplacement();
+					points.get(i).displacement = new Vec3D((float)disp.x(),(float)disp.y(),(float)disp.z());
+					
+				}
+			}
 		}
 	}
 
@@ -2504,35 +2619,14 @@ public class baseKaramba extends PApplet {
 		PrintWriter output = createWriter("debug.txt");
 		// agent variables
 		output.println("AGENT VARIABLES");
-		output.println();
 		
-		output.println("Agents Index:" + agentsIA);
-		output.println();
-		
-		output.println("Neighbor Index:" + agentsIB);
-		output.println();
-		
-		output.println("Agents:" + agentsDisconnected);
-		agentSize = agents.size();
-		output.println();
-				
 		output.println();
 		
 		output.println(debug1);
-		output.println(debug2);
 		
 		output.println();
-		
-		output.println(debug3);
-		output.println(debug4);
-		
-		output.println();
-		
-		output.println(debug5);
-		
-		output.println();
-		
-		output.println("f:"+ frameCount + " " + "a:" + agentSize);
+
+		output.println("f:"+ frameCount + " " + "a:" + agents.size());
 		output.flush();
 		output.close();
 	}
@@ -2674,130 +2768,10 @@ public class baseKaramba extends PApplet {
 		}
 		return collection;
 	}
-
-	
-		
-	
-	
-	
-
-	
-	
-//GET DISPLACEMENTS FROM KARAMBA
-	
-		public void getDisplacements() {
-
-		System.load(
-				"K:/University of Cincinnati/2019 Thesis Year/Thesis Studio 8009/Processing/karamba/Java/64bit/Cantilever/karambaJAVA.dll");
-
-		// Load the license
-		License lic = License.Instance();
-		lic.loadLicense("license.lic", "public.key");
-		if (lic.error_flg()) {
-			System.out.println(lic.error_msg());
-			System.exit(1);
-		}
-		
-		
-		//MATERIAL
-        double E = 210000; // MN/m2
-        double G = 80000; // MN/m2
-        double gamma = 78.5; // MN/m3
-        Material material = new Material(E,G,gamma);
-        material.swigCMemOwn = false;           
-        
-        //CROSSEC
-        double A = 0.05; // m2
-        double Iyy = 0.00001; // m4 moment of inertia about z axis
-        double Izz = 0.00001; // m4 moment of inertia about y axis
-        double Ipp = 0.003; // m4 torsional moment of inertia
-        double ky = 0.0; // rigid shear
-        double kz = 0.0; // rigid shear
-        Beam3DCroSec crosec = new Beam3DCroSec(A,Iyy,Izz,Ipp,ky,kz);
-        crosec.swigCMemOwn = false;
-        
-        
-      //NODES
-        ArrayList<Agent> points = new ArrayList<Agent>();
-        for(Agent a : agents) {
-               if(a.neighbors.size()>0) points.add(a);
-        }
-        feb.Node nodes[] = new Node[points.size()];
-        for(int i=0;i<points.size();i++) {
-               nodes[i] = new Node(points.get(i).x,points.get(i).y,points.get(i).z);//not sure what info the Node needs
-        }
-        
-        //ELEMENTS
-        ArrayList<ArrayList<feb.Node>> nodePairs = new ArrayList<ArrayList< feb.Node>>();
-        for (Agent a : points) {//loop through points, not agents
-               for (Agent n : a.neighbors) { //agents for neighbor
-                     if (a.index < n.index || n.neighbors.contains(a) == false) {//agents can have each other as neighbors. therefore in order to avoid duplicating elements, beams are only added if the index of a is smaller, or if the neighbor does not have the agent in its list of neighbors   
-                    	 nodePairs.add(new ArrayList<feb.Node>(Arrays.asList(nodes[points.indexOf(a)],nodes[points.indexOf(n)])));
-                     }
-               }
-        }
-        Beam3D beams[] = new Beam3D[nodePairs.size()];
-        for(int i=0;i<nodePairs.size();i++) {
-        	beams[i] = new Beam3D(nodePairs.get(i).get(0), nodePairs.get(i).get(1), material, crosec);
-        }
-
-      		
-      //ASSEMBLE (MODEL)
-		
-      	Model model = new Model();
-      	for (Node node : nodes) {
-      		node.swigCMemOwn = false;
-    		model.add(node);
-      	}
-      		
-      	model.add(material);
-      	model.add(crosec);
-      		
-      	for (Beam3D beam : beams) {
-      		beam.swigCMemOwn = false;
-      		model.add(beam);
-      	}
-      	
-      	ArrayList<BoundaryCondition> bcs = new ArrayList<BoundaryCondition>();
-      	
-      	
-      	for (int i = 0; i<points.size(); i++) {
-      		if(points.get(i).z < 2) {
-      			bcs.add(new BoundaryCondition(i, Node.DOF.x_t, BoundaryCondition.BCType.disp, 0));
-      			bcs.add(new BoundaryCondition(i, Node.DOF.y_t, BoundaryCondition.BCType.disp, 0));
-      			bcs.add(new BoundaryCondition(i, Node.DOF.z_t, BoundaryCondition.BCType.disp, 0));
-      			bcs.add(new BoundaryCondition(i, Node.DOF.x_r, BoundaryCondition.BCType.disp, 0));
-      			bcs.add(new BoundaryCondition(i, Node.DOF.y_r, BoundaryCondition.BCType.disp, 0));
-      			bcs.add(new BoundaryCondition(i, Node.DOF.z_r, BoundaryCondition.BCType.disp, 0));
-      		} else {
-      			bcs.add(new BoundaryCondition(i, Node.DOF.z_t, BoundaryCondition.BCType.force, -1));
-      		}
-      	}
-      
-      	for (BoundaryCondition bc : bcs) {
-			bc.swigCMemOwn = false;
-			model.add(bc);
-		}
-      	
-      	
-      	Deform analysis = new Deform(model);
-		Response response = new Response(analysis);
-		
-		response.updateNodalDisplacements();
-		
-		
-		if(points.size()==response.model().Nodes().size()) {
-			for (int i = 0; i<points.size(); i++) {
-
-			Vec3d disp = response.model().Nodes().get(i).getDisplacement();
-			points.get(i).displacement = new Vec3D((float)disp.x(),(float)disp.y(),(float)disp.z());
-			}
-		}
-	}
       	
 
 	static public void main(String[] passedArgs) {
-		String[] appletArgs = new String[] { "main.baseKaramba" };
+		String[] appletArgs = new String[] { "main.cellKaramba" };
 		if (passedArgs != null) {
 			PApplet.main(concat(appletArgs, passedArgs));
 		} else {

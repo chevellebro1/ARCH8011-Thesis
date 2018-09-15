@@ -1,18 +1,5 @@
 AGENT VARIABLES
 
-Agents Index:[]
-
-Neighbor Index:[]
-
-Agents:[]
-
-
-0
-0
-
-null
 null
 
-0.0
-
-f:48 a:33
+f:173 a:244

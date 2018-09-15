@@ -72,9 +72,6 @@ public class cellKaramba extends PApplet {
 	ArrayList<Agent> agentsIndex = new ArrayList<Agent>(); // agent index
 	ArrayList<Attractor> attractors = new ArrayList<Attractor>();
 	
-	ArrayList<Integer> agentsIA = new ArrayList<Integer>();
-	ArrayList<Integer> agentsIB = new ArrayList<Integer>();
-	
 	
 	boolean getDisplacements = true;
 	int getDisplacementInterval = 8;
@@ -155,6 +152,8 @@ public class cellKaramba extends PApplet {
 	boolean showComponents = false;
 	boolean printLength = false;
 	boolean showDisplacements = false;
+	boolean variables = false;
+	boolean debug = false;
 
 	public void setup() {
 		println("starting ", name);
@@ -322,7 +321,7 @@ public class cellKaramba extends PApplet {
 			acc.addSelf(forceVoxel(facVoxel));// pull towards the closest voxel
 
 			// CONSTRAIN POSITION
-			// bounce(0.0);
+			bounce((float) 1.0);
 
 			// DIVIDE
 			if (age > minAge) {
@@ -2257,6 +2256,8 @@ public class cellKaramba extends PApplet {
 
 	}
 
+
+
 	/**
 	 * Cell Growth Simulation
 	 *
@@ -2289,7 +2290,7 @@ public class cellKaramba extends PApplet {
 			ambientLight(76, 76, 76);
 
 			if (run == true) {
-				if (getDisplacements && frameCount % getDisplacementInterval == 0)
+				if (getDisplacements && frameCount % getDisplacementInterval == 0) {
 					getDisplacements();// read from GH Karamba
 				// for(Agent a:agents) a.findNeighbors();
 				for (Agent a : agents)
@@ -2298,7 +2299,12 @@ public class cellKaramba extends PApplet {
 					a.update();
 				agents.addAll(agentsNew);
 				agentsNew.clear();
-				//saveVariables();
+				if (variables == true) {
+					saveVariables();
+				}
+				if (debug == true) {
+					debugPrint();
+				}
 			}
 
 			// pushMatrix();//for rotation of the model
@@ -2372,8 +2378,7 @@ public class cellKaramba extends PApplet {
 				println("component length:", ceil(voxelgrid.componentLength(0.04f)));
 				printLength = false;
 			}
-			
-			debugPrint();
+			}
 		}
 	}
 
@@ -2646,12 +2651,12 @@ public class cellKaramba extends PApplet {
 		}
 		return collection;
 	}
-
 	
 	
-
 	
-//GET DISPLACEMENTS FROM KARAMBA
+	
+	
+	//GET DISPLACEMENTS FROM KARAMBA
 	
 		public void getDisplacements() {
 
@@ -2764,7 +2769,7 @@ public class cellKaramba extends PApplet {
 			}
 		}
 	}
-      	
+
 
 	static public void main(String[] passedArgs) {
 		String[] appletArgs = new String[] { "main.cellKaramba" };

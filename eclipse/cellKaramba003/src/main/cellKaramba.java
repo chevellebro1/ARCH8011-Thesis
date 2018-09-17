@@ -80,8 +80,8 @@ public class cellKaramba extends PApplet {
 	ArrayList<Float> debug1;
 	ArrayList<Agent> debug2;
 	float debug3;
-	Agent debug4;
-	float debug5;
+	float debug4;
+	boolean debug5;
 	
 	
 
@@ -111,7 +111,7 @@ public class cellKaramba extends PApplet {
 	float _facOrthogonal = 0.0f;// orthogonal force (0.05)
 	float _facAttractors = 0.0f;// force towards attractors (0.05)
 	float _facAttractorRotation = 0.0f;// force around attractors (0.01)
-	Vec3D _unary = new Vec3D(0.0f, 0.0f, 0.005f);// unary force (-0.005)
+	Vec3D _unary = new Vec3D(0.0f, 0.0f, 0.01f);// unary force (-0.005)
 	float _facFollowMesh = 0.01f;// force towards meshes (+/-0.01-0.05)
 	float _facVoxel = 0.0f;// force towards the closest voxel
 	int _minAge = 10;// minimum age for cell division (a larger number (10) inhibits the growth of tentacles)
@@ -120,7 +120,9 @@ public class cellKaramba extends PApplet {
 	float _offsetDivision = 0.1f;// random offset of the child cell from the parent cell (0.1)
 	float _facVelChild = 0.0f;// scale factor for child velocity after cell division (a negative value inhibits the growth of tentacles)
 	float _facVelParent = -1.0f;// scale factor for parent velocity after cell division (a negative value inhibits the growth of tentacles)
-
+	float magnitudeMax = 30;
+	boolean karambaMv = false;
+	boolean invertMv;
 	
 // MESHES
 	Mesh meshStart01;
@@ -239,6 +241,7 @@ public class cellKaramba extends PApplet {
 		// PARAMETERS
 		Vec3D vel; // velocity = speed and direction the agent is travelling
 		Vec3D acc;// acceleration
+		float mV;
 		ArrayList<Attractor> atts = new ArrayList<Attractor>(); // attractors the agent reacts to
 		ArrayList<Attractor> attsRotation = new ArrayList<Attractor>(); // attractors the agent rotates around
 		ArrayList<Vec3D> attsRotationAxes = new ArrayList<Vec3D>(); // attractors the agent rotates around
@@ -254,6 +257,7 @@ public class cellKaramba extends PApplet {
 		Vec3D displacement;// displacement as imported from GH Karamba
 		Voxel voxel;// voxel of the agent for voxelization
 		Component component;// component of the agent, for voxelization
+		
 
 		// SETTINGS
 		int[] col = _col;
@@ -291,6 +295,7 @@ public class cellKaramba extends PApplet {
 			attsRotationAxes = new ArrayList<Vec3D>(Arrays.asList(new Vec3D(0, 0, 1), new Vec3D(0, 0, -1)));
 			normal = new Vec3D();
 			displacement = new Vec3D();
+			mV = 0;
 		}
 
 		// BEHAVIORS
@@ -321,7 +326,7 @@ public class cellKaramba extends PApplet {
 			acc.addSelf(forceVoxel(facVoxel));// pull towards the closest voxel
 
 			// CONSTRAIN POSITION
-			bounce((float) 2.0);
+			bounce((float) 5.0);
 
 			// DIVIDE
 			if (age > minAge) {
@@ -341,13 +346,26 @@ public class cellKaramba extends PApplet {
 						agentNew.displacement = displacement;
 						agentNew.neighbors = new ArrayList<Agent>(neighbors);
 						agentNew.neighbors.add(this);
+						mV = agentNew.magnitude();
+						if ((mV > magnitudeMax) && (karambaMv == true)) {
+							vel.invert().scaleSelf(facVelParent);// invert the vector and scale to the parent cell
+							invertMv = true;
+							debug5 = invertMv;
+						} else {
+							vel.scaleSelf(facVelParent);// set the velocity of the parent cell
+							invertMv = false;
+							debug5 = invertMv;
+						}
+	
 						neighbors.add(agentNew);
 						agentsNew.add(agentNew);
-						vel.scaleSelf(facVelParent);// set the velocity of the parent cell
 						age = 0;// set the age of the parent cell to 0
+						
 					}
 				}
 			}
+			
+			
 		}
 
 		public void update() {
@@ -830,10 +848,10 @@ public class cellKaramba extends PApplet {
 
 		public void displayDisplacements() {
 			//Vec3D p = this.add(displacement.scale(1));
-			//Vec3D p = this.add(displacement.normalize()); // Set all length to 1
-			Vec3D p = this.add(displacement.scale(1/dispAverage)); // Scale based on average
+			Vec3D p = this.add(displacement.normalize()); // Set all length to 1
+			//Vec3D p = this.add(displacement.scale(1/dispAverage)); // Scale based on average
 			strokeWeight(1);
-			stroke(125, 0, 100);
+			stroke(125,0,100);
 			line(x, y, z, p.x, p.y, p.z);
 		}
 
@@ -2506,6 +2524,9 @@ public class cellKaramba extends PApplet {
 			
 			dispAverage = total / points.size();
 			
+			
+			
+			
 			debug1 = mag1;
 			debug2 = points;
 			debug3 = dispAverage;
@@ -2634,14 +2655,22 @@ public class cellKaramba extends PApplet {
 		
 		output.println();
 		
+		output.println("Invert");
+		output.println(debug5);
+		
+		output.println();
+		
+		output.println("Displacement Average");
 		output.println(debug3);
 		
 		output.println();
 		
+		output.println("Displacement Magnitude");
 		output.println(debug1);
 		
 		output.println();
 		
+		output.println("Agent Points");
 		output.println(debug2);
 		
 		output.println();

@@ -73,11 +73,13 @@ public class cellKaramba extends PApplet {
 	boolean getDisplacements = true;
 	int getDisplacementInterval = 8;
 	
+	float dispAverage = 0;
+	
 	
 // DEBUG
-	float debug1;
-	int debug2;
-	Agent debug3;
+	ArrayList<Float> debug1;
+	ArrayList<Agent> debug2;
+	float debug3;
 	Agent debug4;
 	float debug5;
 	
@@ -828,7 +830,8 @@ public class cellKaramba extends PApplet {
 
 		public void displayDisplacements() {
 			//Vec3D p = this.add(displacement.scale(1));
-			Vec3D p = this.add(displacement.normalize()); // Set all length to 1
+			//Vec3D p = this.add(displacement.normalize()); // Set all length to 1
+			Vec3D p = this.add(displacement.scale(1/dispAverage)); // Scale based on average
 			strokeWeight(1);
 			stroke(125, 0, 100);
 			line(x, y, z, p.x, p.y, p.z);
@@ -2492,12 +2495,21 @@ public class cellKaramba extends PApplet {
 				}
 			}
 			
+			float total = 0;
+			
+			ArrayList<Float> mag1 = new ArrayList<Float>(); // ArrayList of displacement magnitudes
 			for (int i = 0; i < points.size(); i++) {
-				float mag = 0;
-				mag = points.get(i).magnitude();
 				
-				debug1 = mag;
+				total = total + points.get(i).magnitude(); // get magnitude totals
+				
+				mag1.add(points.get(i).magnitude()); // add magnitudes to ArrayList
 			}
+			
+			dispAverage = total / points.size();
+			
+			debug1 = mag1;
+			debug2 = points;
+			debug3 = dispAverage;
 		}
 	}
 
@@ -2623,10 +2635,18 @@ public class cellKaramba extends PApplet {
 		
 		output.println();
 		
+		output.println(debug3);
+		
+		output.println();
+		
 		output.println(debug1);
 		
 		output.println();
-
+		
+		output.println(debug2);
+		
+		output.println();
+		
 		output.println("f:"+ frameCount + " " + "a:" + agents.size());
 		output.flush();
 		output.close();

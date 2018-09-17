@@ -843,7 +843,7 @@ public class cellKaramba extends PApplet {
 
 
 
-	class Vertex extends Vec3D {
+	public class Vertex extends Vec3D {
 
 		int index;
 		Mesh mesh;

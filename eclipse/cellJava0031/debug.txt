@@ -1,0 +1,5 @@
+AGENT VARIABLES
+
+7.251375
+
+f:52 a:32

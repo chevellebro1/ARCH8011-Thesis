@@ -2384,12 +2384,10 @@ public class cellKaramba extends PApplet {
 	
 	public class Karamba {
 	
-	//GET DISPLACEMENTS FROM KARAMBA
 	
 			public void getDisplacements() {
 
-			System.load(
-					"K:/University of Cincinnati/2019 Thesis Year/Thesis Studio 8009/Processing/karamba/Java/64bit/Cantilever/karambaJAVA.dll");
+			System.load("K:/University of Cincinnati/2019 Thesis Year/Thesis Studio 8009/Processing/karamba/Java/64bit/Cantilever/karambaJAVA.dll");
 
 			// Load the license
 			License lic = License.Instance();
@@ -2494,6 +2492,7 @@ public class cellKaramba extends PApplet {
 					points.get(i).displacement = new Vec3D((float)disp.x(),(float)disp.y(),(float)disp.z());
 				}
 			}
+			
 			
 			float total = 0;
 			

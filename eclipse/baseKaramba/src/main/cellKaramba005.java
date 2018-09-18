@@ -72,7 +72,7 @@ public class cellKaramba005 extends PApplet {
 		
 	
 // KARAMBA VARIABLES
-	boolean getDisplacements = false;
+	boolean getDisplacements = true;
 	boolean invertMv;
 	int getDisplacementInterval = 8;
 	float dispMax = 30;
@@ -88,6 +88,7 @@ public class cellKaramba005 extends PApplet {
 	float debug3;
 	Agent debug4;
 	boolean debug5;
+	Vec3d debug6;
 	
 	
 
@@ -158,7 +159,7 @@ public class cellKaramba005 extends PApplet {
 	boolean printLength = false;
 	boolean showDisplacements = false;
 	boolean variable = false;
-	boolean debug = false;
+	boolean debug = true;
 
 	public void setup() {
 		println("starting ", name);
@@ -347,18 +348,6 @@ public class cellKaramba005 extends PApplet {
 						agentNew.displacement = displacement;
 						agentNew.neighbors = new ArrayList<Agent>(neighbors);
 						agentNew.neighbors.add(this);
-						mVdisp = agentNew.magnitude();
-						
-						if ((mVdisp > dispMax) && (getDisplacements == true)) {
-							vel.invert().scaleSelf(facVelParent);// invert the vector and scale to the parent cell
-							invertMv = true;
-							debug5 = invertMv;
-						} else {
-							vel.scaleSelf(facVelParent);// set the velocity of the parent cell
-							invertMv = false;
-							debug5 = invertMv;
-						}
-						
 						neighbors.add(agentNew);
 						agentsNew.add(agentNew);
 						age = 0;// set the age of the parent cell to 0
@@ -2504,11 +2493,17 @@ public class cellKaramba005 extends PApplet {
 			
 			if(points.size()==response.model().Nodes().size()) {
 				for (int i = 0; i < points.size(); i++) {
-
+					
 					Vec3d disp = response.model().Nodes().get(i).getDisplacement();
+					
+					debug6 = response.model().Nodes().get(i).getDisplacement();
+					
 					points.get(i).displacement = new Vec3D((float)disp.x(),(float)disp.y(),(float)disp.z());
+					
 				}
 			}
+			
+			//MAGNITUDE
 			
 			float total = 0;
 			
@@ -2646,6 +2641,11 @@ public class cellKaramba005 extends PApplet {
 	public void debugPrint() {
 		PrintWriter output = createWriter("debug.txt");
 		output.println("AGENT VARIABLES DEBUG");
+		
+		output.println();
+		
+		output.println("Displacement");
+		output.println(debug6);
 		
 		output.println();
 		

@@ -72,7 +72,7 @@ public class cellKaramba005 extends PApplet {
 		
 	
 // KARAMBA VARIABLES
-	boolean getDisplacements = false;
+	boolean getDisplacements = true;
 	boolean invertMv;
 	int getDisplacementInterval = 8;
 	float dispMax = 30;
@@ -88,6 +88,7 @@ public class cellKaramba005 extends PApplet {
 	float debug3;
 	Agent debug4;
 	boolean debug5;
+	Vec3d debug6;
 	
 	
 
@@ -158,7 +159,7 @@ public class cellKaramba005 extends PApplet {
 	boolean printLength = false;
 	boolean showDisplacements = false;
 	boolean variable = false;
-	boolean debug = false;
+	boolean debug = true;
 
 	public void setup() {
 		println("starting ", name);
@@ -310,15 +311,13 @@ public class cellKaramba005 extends PApplet {
 		
 
 			// CELL FORCES
-			acc.addSelf(forcePoint(neighborsClose, facNeighborsClose, _rangeClose));// repelling point force between
-																					// close neighbours
+			acc.addSelf(forcePoint(neighborsClose, facNeighborsClose, _rangeClose));// repelling point force between close neighbours
 			if (neighbors.size() > 0)
 				acc.addSelf(forcePoint(neighbors.get(0), facNeighborsClosest));// force towards closest neighbor
 			acc.addSelf(forcePoint(neighborsFar, facNeighborsFar));// force towards all far neighbors
 
 			acc.addSelf(forceAttractors(atts, facAttractors));// force towards attractors
-			acc.addSelf(forceAttractorRotation(attsRotation, new Vec3D(0, 0, 1), facAttractorRotation));// force towards
-																										// attractors
+			acc.addSelf(forceAttractorRotation(attsRotation, new Vec3D(0, 0, 1), facAttractorRotation));// force towards attractors
 			acc.addSelf(planarize(facPlanarize));// pull each cell onto a plane
 			acc.addSelf(forceStrata(facStrata));// pull each cell into parallel planes
 			acc.addSelf(forceOrthogonal(facOrthogonal));// pull each cell into orthogonal planes
@@ -2294,10 +2293,10 @@ public class cellKaramba005 extends PApplet {
 	public synchronized void draw() {
 
 		if (!loaded) {
-			background(0);
+			background(255);
 		} else {
 
-			background(255);
+			background(0);
 			pointLight(126, 126, 106, 0, 0, 0);
 			pointLight(126, 136, 156, 1280, 720, 720);
 			ambientLight(76, 76, 76);
@@ -2504,11 +2503,17 @@ public class cellKaramba005 extends PApplet {
 			
 			if(points.size()==response.model().Nodes().size()) {
 				for (int i = 0; i < points.size(); i++) {
-
+					
 					Vec3d disp = response.model().Nodes().get(i).getDisplacement();
+					
+					debug6 = response.model().Nodes().get(i).getDisplacement();
+					
 					points.get(i).displacement = new Vec3D((float)disp.x(),(float)disp.y(),(float)disp.z());
+					
 				}
 			}
+			
+			//MAGNITUDE
 			
 			float total = 0;
 			
@@ -2646,6 +2651,11 @@ public class cellKaramba005 extends PApplet {
 	public void debugPrint() {
 		PrintWriter output = createWriter("debug.txt");
 		output.println("AGENT VARIABLES DEBUG");
+		
+		output.println();
+		
+		output.println("Displacement");
+		output.println(debug6);
 		
 		output.println();
 		

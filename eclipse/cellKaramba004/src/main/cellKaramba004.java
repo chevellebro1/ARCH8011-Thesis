@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.io.File;
 import java.io.PrintWriter;
 
-public class cellKaramba extends PApplet {
+public class cellKaramba004 extends PApplet {
 
 	/**
 	 * Cell Growth Simulation
@@ -70,16 +70,26 @@ public class cellKaramba extends PApplet {
 	ArrayList<Agent> agentsNew = new ArrayList<Agent>();
 	ArrayList<Attractor> attractors = new ArrayList<Attractor>();
 		
+	
+// KARAMBA VARIABLES
+	boolean karambaRun = true;
 	boolean getDisplacements = true;
+	boolean invertMv;
 	int getDisplacementInterval = 8;
+	float dispAverage = 0;
+	float mVdisp;
+	ArrayList<Float> magList = new ArrayList<Float>();
+	
+
+	
 	
 	
 // DEBUG
 	ArrayList<Float> debug1;
-	float debug2;
-	Agent debug3;
+	ArrayList<Agent> debug2;
+	float debug3;
 	Agent debug4;
-	float debug5;
+	boolean debug5;
 	
 	
 
@@ -118,6 +128,7 @@ public class cellKaramba extends PApplet {
 	float _offsetDivision = 0.1f;// random offset of the child cell from the parent cell (0.1)
 	float _facVelChild = 0.0f;// scale factor for child velocity after cell division (a negative value inhibits the growth of tentacles)
 	float _facVelParent = -1.0f;// scale factor for parent velocity after cell division (a negative value inhibits the growth of tentacles)
+	float dispMax = 30;
 
 	
 // MESHES
@@ -339,9 +350,20 @@ public class cellKaramba extends PApplet {
 						agentNew.displacement = displacement;
 						agentNew.neighbors = new ArrayList<Agent>(neighbors);
 						agentNew.neighbors.add(this);
+						mVdisp = agentNew.magnitude();
+						
+						if ((mVdisp > dispMax) && (karambaRun == true)) {
+							vel.invert().scaleSelf(facVelParent);// invert the vector and scale to the parent cell
+							invertMv = true;
+							debug5 = invertMv;
+						} else {
+							vel.scaleSelf(facVelParent);// set the velocity of the parent cell
+							invertMv = false;
+							debug5 = invertMv;
+						}
+						
 						neighbors.add(agentNew);
 						agentsNew.add(agentNew);
-						vel.scaleSelf(facVelParent);// set the velocity of the parent cell
 						age = 0;// set the age of the parent cell to 0
 					}
 				}
@@ -2385,8 +2407,7 @@ public class cellKaramba extends PApplet {
 	
 			public void getDisplacements() {
 
-			System.load(
-					"K:/University of Cincinnati/2019 Thesis Year/Thesis Studio 8009/Processing/karamba/Java/64bit/Cantilever/karambaJAVA.dll");
+			System.load("K:/University of Cincinnati/2019 Thesis Year/Thesis Studio 8009/Processing/karamba/Java/64bit/Cantilever/karambaJAVA.dll");
 
 			// Load the license
 			License lic = License.Instance();
@@ -2492,13 +2513,19 @@ public class cellKaramba extends PApplet {
 				}
 			}
 			
-			ArrayList<Float> mag1 = new ArrayList<Float>();
+			float total = 0;
+			
 			for (int i = 0; i < points.size(); i++) {
-				
-				mag1.add(points.get(i).magnitude());
+				total = total + points.get(i).magnitude(); // get magnitude totals
+				magList.add(points.get(i).magnitude()); // add magnitudes to ArrayList
 			}
 			
-			debug1 = mag1;
+			dispAverage = total / points.size();
+			
+			debug1 = magList;
+			debug2 = points;
+			debug3 = dispAverage;
+			
 		}
 	}
 
@@ -2620,11 +2647,27 @@ public class cellKaramba extends PApplet {
 //PRINT DEBUG VARIABLES
 	public void debugPrint() {
 		PrintWriter output = createWriter("debug.txt");
-		output.println("AGENT VARIABLES");
+		output.println("AGENT VARIABLES DEBUG");
 		
 		output.println();
 		
+		output.println("Displacement Average");
+		output.println(debug3);
+		
+		output.println();
+		
+		output.println("Invert");
+		output.println(debug5);
+		
+		output.println();
+		
+		output.println("Displacement Magnitude");
 		output.println(debug1);
+		
+		output.println();
+		
+		output.println("Agent Points");
+		output.println(debug2);
 		
 		output.println();
 		
@@ -2773,7 +2816,7 @@ public class cellKaramba extends PApplet {
       	
 
 	static public void main(String[] passedArgs) {
-		String[] appletArgs = new String[] { "main.cellKaramba" };
+		String[] appletArgs = new String[] { "main.cellKaramba004" };
 		if (passedArgs != null) {
 			PApplet.main(concat(appletArgs, passedArgs));
 		} else {

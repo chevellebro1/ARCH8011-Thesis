@@ -2,13 +2,13 @@ INDEX VERSION 1.131+K:\University of Cincinnati\2019 Thesis Year\~github\ARCH801
 4269970817.index
 2366471612.index
 770601080.index
+17823118.index
 3169632283.index
 1821475080.index
-17823118.index
 3996102163.index
 3495195691.index
-2984978055.index
 3460074974.index
+2984978055.index
 861789088.index
 1632552655.index
 1020088432.index
@@ -25,9 +25,9 @@ INDEX VERSION 1.131+K:\University of Cincinnati\2019 Thesis Year\~github\ARCH801
 566974629.index
 1661068603.index
 207215117.index
+2896540838.index
 3465519547.index
 1536725071.index
-2896540838.index
 2981342344.index
 1942800645.index
 4273119408.index

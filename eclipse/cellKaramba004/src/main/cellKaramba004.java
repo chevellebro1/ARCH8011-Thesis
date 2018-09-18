@@ -81,8 +81,6 @@ public class cellKaramba004 extends PApplet {
 	
 
 	
-	
-	
 // DEBUG
 	ArrayList<Float> debug1;
 	ArrayList<Agent> debug2;
@@ -2518,6 +2516,7 @@ public class cellKaramba004 extends PApplet {
 				total = total + points.get(i).magnitude(); // get magnitude totals
 				magList.add(points.get(i).magnitude()); // add magnitudes to ArrayList
 			}
+			
 			
 			dispAverage = total / points.size();
 			

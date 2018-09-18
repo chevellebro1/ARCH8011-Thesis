@@ -72,7 +72,6 @@ public class cellKaramba004 extends PApplet {
 		
 	
 // KARAMBA VARIABLES
-	boolean karambaRun = false;
 	boolean getDisplacements = true;
 	boolean invertMv;
 	int getDisplacementInterval = 8;
@@ -119,7 +118,7 @@ public class cellKaramba004 extends PApplet {
 	float _facOrthogonal = 0.0f;// orthogonal force (0.05)
 	float _facAttractors = 0.0f;// force towards attractors (0.05)
 	float _facAttractorRotation = 0.0f;// force around attractors (0.01)
-	Vec3D _unary = new Vec3D(0.0f, 0.0f, 0.005f);// unary force (-0.005)
+	Vec3D _unary = new Vec3D(0.0f, 0.0f, 0.015f);// unary force (-0.005)
 	float _facFollowMesh = 0.01f;// force towards meshes (+/-0.01-0.05)
 	float _facVoxel = 0.0f;// force towards the closest voxel
 	int _minAge = 10;// minimum age for cell division (a larger number (10) inhibits the growth of tentacles)
@@ -352,7 +351,7 @@ public class cellKaramba004 extends PApplet {
 						agentNew.neighbors.add(this);
 						mVdisp = agentNew.magnitude();
 						
-						if ((mVdisp > dispMax) && (karambaRun == true)) {
+						if ((mVdisp > dispMax) && (getDisplacements == true)) {
 							vel.invert().scaleSelf(facVelParent);// invert the vector and scale to the parent cell
 							invertMv = true;
 							debug5 = invertMv;

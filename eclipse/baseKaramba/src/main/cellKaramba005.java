@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.io.File;
 import java.io.PrintWriter;
 
-public class cellKaramba004 extends PApplet {
+public class cellKaramba005 extends PApplet {
 
 	/**
 	 * Cell Growth Simulation
@@ -72,9 +72,10 @@ public class cellKaramba004 extends PApplet {
 		
 	
 // KARAMBA VARIABLES
-	boolean getDisplacements = true;
+	boolean getDisplacements = false;
 	boolean invertMv;
 	int getDisplacementInterval = 8;
+	float dispMax = 30;
 	float dispAverage = 0;
 	float mVdisp;
 	ArrayList<Float> magList = new ArrayList<Float>();
@@ -117,7 +118,7 @@ public class cellKaramba004 extends PApplet {
 	float _facAttractors = 0.0f;// force towards attractors (0.05)
 	float _facAttractorRotation = 0.0f;// force around attractors (0.01)
 	Vec3D _unary = new Vec3D(0.0f, 0.0f, 0.015f);// unary force (-0.005)
-	float _facFollowMesh = 0.01f;// force towards meshes (+/-0.01-0.05)
+	float _facFollowMesh = 0.0f;// force towards meshes (+/-0.01-0.05)
 	float _facVoxel = 0.0f;// force towards the closest voxel
 	int _minAge = 10;// minimum age for cell division (a larger number (10) inhibits the growth of tentacles)
 	int _countDivide = 2;// amount of neighbors to check distance to, to trigger cell division
@@ -125,7 +126,6 @@ public class cellKaramba004 extends PApplet {
 	float _offsetDivision = 0.1f;// random offset of the child cell from the parent cell (0.1)
 	float _facVelChild = 0.0f;// scale factor for child velocity after cell division (a negative value inhibits the growth of tentacles)
 	float _facVelParent = -1.0f;// scale factor for parent velocity after cell division (a negative value inhibits the growth of tentacles)
-	float dispMax = 30;
 
 	
 // MESHES
@@ -158,7 +158,7 @@ public class cellKaramba004 extends PApplet {
 	boolean printLength = false;
 	boolean showDisplacements = false;
 	boolean variable = false;
-	boolean debug = true;
+	boolean debug = false;
 
 	public void setup() {
 		println("starting ", name);
@@ -323,7 +323,7 @@ public class cellKaramba004 extends PApplet {
 			acc.addSelf(forceStrata(facStrata));// pull each cell into parallel planes
 			acc.addSelf(forceOrthogonal(facOrthogonal));// pull each cell into orthogonal planes
 			acc.addSelf(unary);// unary force
-			//acc.addSelf(followMesh(facFollowMesh));// pull towards the mesh
+			acc.addSelf(followMesh(facFollowMesh));// pull towards the mesh
 			acc.addSelf(forceVoxel(facVoxel));// pull towards the closest voxel
 
 			// CONSTRAIN POSITION
@@ -2814,7 +2814,7 @@ public class cellKaramba004 extends PApplet {
       	
 
 	static public void main(String[] passedArgs) {
-		String[] appletArgs = new String[] { "main.cellKaramba004" };
+		String[] appletArgs = new String[] { "main.cellKaramba005" };
 		if (passedArgs != null) {
 			PApplet.main(concat(appletArgs, passedArgs));
 		} else {

@@ -25,4 +25,5 @@
     <fullyQualifiedTypeName name="main.cellKaramba.Edge"/>
     <fullyQualifiedTypeName name="main.cellKaramba.Face"/>
     <fullyQualifiedTypeName name="main.cellKaramba.Vertex"/>
+    <fullyQualifiedTypeName name="main.cellKarambathread.Agent.ThreadMain"/>
 </qualifiedTypeNameHistroy>

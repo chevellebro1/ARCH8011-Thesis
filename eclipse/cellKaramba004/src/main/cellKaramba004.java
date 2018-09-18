@@ -72,7 +72,7 @@ public class cellKaramba004 extends PApplet {
 		
 	
 // KARAMBA VARIABLES
-	boolean karambaRun = true;
+	boolean karambaRun = false;
 	boolean getDisplacements = true;
 	boolean invertMv;
 	int getDisplacementInterval = 8;

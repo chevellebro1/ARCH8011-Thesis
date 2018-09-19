@@ -72,12 +72,13 @@ public class cellKaramba005 extends PApplet {
 		
 	
 // KARAMBA VARIABLES
-	boolean getDisplacements = true;
+	boolean getDisplacements = true; // enable karamba
 	boolean invertMv;
 	int getDisplacementInterval = 8;
 	float dispMax = 30;
 	float dispAverage = 0;
 	float mVdisp;
+	Vec3D velK = new Vec3D(0.0f,0.0f,-0.1f);
 	ArrayList<Float> magList = new ArrayList<Float>();
 	
 
@@ -88,8 +89,7 @@ public class cellKaramba005 extends PApplet {
 	float debug3;
 	Agent debug4;
 	boolean debug5;
-	Vec3d debug6;
-	
+	float debug6;
 	
 
 // VOXELS AND COMPONENTS
@@ -167,10 +167,11 @@ public class cellKaramba005 extends PApplet {
 		// size(1920, 1080, P3D);
 
 		frameRate(30);
-		cam = new PeasyCam(this, 0, 0, 0, 100);
+		cam = new PeasyCam(this, 0, 0, 0, 100); //default view
+		//cam = new PeasyCam(this, -325.199, 49.5162, 84.539, 100);
 		cam.setRotations(-1.57f, -1.57f, 0.0f);// left view
 		// perspective(PI/3.0, width/height, 0.001,100000);
-		// hint(DISABLE_DEPTH_TEST);
+		//hint(DISABLE_DEPTH_TEST);
 
 		thread("loadFiles");
 	}
@@ -257,6 +258,21 @@ public class cellKaramba005 extends PApplet {
 		int countClose = 0;// amount of close neighbors
 		int index;
 		int age;
+		
+		
+		//VISUAL
+		float[] strokeStart = { 90, 142, 200 };
+		float[] strokeStop = { 195, 52, 143 };
+		
+		float redDif = strokeStart[0] - strokeStop[0];
+		float greenDif = strokeStart[1] - strokeStop[1];
+		float blueDif = strokeStart[2] - strokeStop[2];
+		
+		float red = Math.abs(redDif) / 250;
+		float green = Math.abs(greenDif) / 250;
+		float blue = Math.abs(blueDif) / 250;
+		
+		
 		Vec3D normal;// the normal of the agent according to its neighbors
 		Vec3D displacement;// displacement as imported from GH Karamba
 		Voxel voxel;// voxel of the agent for voxelization
@@ -305,7 +321,8 @@ public class cellKaramba005 extends PApplet {
 		public void move() {
 			acc.clear();
 			if (age < 250)
-				col = new int[] { 0, PApplet.parseInt(age * 0.5f), age };
+				col = new int[] { PApplet.parseInt(strokeStart[0] + (age * red)), PApplet.parseInt(strokeStart[1] - (age * green)), 
+						PApplet.parseInt(strokeStart[2] + (age * blue)) };
 			findNeighbors();
 			normal = findNormal();
 		
@@ -346,10 +363,12 @@ public class cellKaramba005 extends PApplet {
 						agentNew.displacement = displacement;
 						agentNew.neighbors = new ArrayList<Agent>(neighbors);
 						agentNew.neighbors.add(this);
+						
 						mVdisp = agentNew.magnitude();
 						
 						if ((mVdisp > dispMax) && (getDisplacements == true)) {
-							vel.invert().scaleSelf(facVelParent);// invert the vector and scale to the parent cell
+							vel = velK;// invert the vector and scale to the parent cell
+							vel.scaleSelf(facVelParent);
 							invertMv = true;
 							debug5 = invertMv;
 						} else {
@@ -370,7 +389,7 @@ public class cellKaramba005 extends PApplet {
 			// UPDATE
 			vel.scaleSelf(1.0f - drag);// apply the drag to the previous velocity
 			vel.addSelf(acc);// add the acceleration to the velocity
-			if (age > 250)
+			if (age > 250) 
 				vel.scaleSelf(0.2f);// slower movement for older agents
 			this.addSelf(vel);// add the velocity to the position
 			age += 1;
@@ -757,7 +776,7 @@ public class cellKaramba005 extends PApplet {
 		// DISPLAY EDGES
 		public void displayEdges() {
 			strokeWeight(1);
-			stroke(50, 100, 255, 150);
+			stroke(107, 52, 143, 25);
 			for (Agent n : neighbors) {
 				if (agents.indexOf(this) < agents.indexOf(n)) {
 					Vec3D p0 = new Vec3D(this);
@@ -2296,7 +2315,7 @@ public class cellKaramba005 extends PApplet {
 			background(255);
 		} else {
 
-			background(0);
+			background(5);
 			pointLight(126, 126, 106, 0, 0, 0);
 			pointLight(126, 136, 156, 1280, 720, 720);
 			ambientLight(76, 76, 76);
@@ -2317,8 +2336,6 @@ public class cellKaramba005 extends PApplet {
 				if (debug == true) {
 					debugPrint();
 				}
-				
-				
 			}
 
 			// pushMatrix();//for rotation of the model
@@ -2392,8 +2409,6 @@ public class cellKaramba005 extends PApplet {
 				println("component length:", ceil(voxelgrid.componentLength(0.04f)));
 				printLength = false;
 			}
-			
-			debugPrint();
 		}
 	}
 	
@@ -2505,9 +2520,6 @@ public class cellKaramba005 extends PApplet {
 				for (int i = 0; i < points.size(); i++) {
 					
 					Vec3d disp = response.model().Nodes().get(i).getDisplacement();
-					
-					debug6 = response.model().Nodes().get(i).getDisplacement();
-					
 					points.get(i).displacement = new Vec3D((float)disp.x(),(float)disp.y(),(float)disp.z());
 					
 				}
@@ -2654,10 +2666,8 @@ public class cellKaramba005 extends PApplet {
 		
 		output.println();
 		
-		output.println("Displacement");
 		output.println(debug6);
 		
-		output.println();
 		
 		output.println("Displacement Average");
 		output.println(debug3);
@@ -2694,7 +2704,7 @@ public class cellKaramba005 extends PApplet {
 			run = false;
 			println("paused. camera lookAt; distance; rotations: ", cam.getLookAt()[0], ",", cam.getLookAt()[1], ",",
 					cam.getLookAt()[2], cam.getDistance(), cam.getRotations()[0], ",", cam.getRotations()[1], ",",
-					cam.getRotations()[2]);
+					cam.getRotations()[2], cam.getPosition()[0], cam.getPosition()[1], cam.getPosition()[2]);
 		}
 		if (key == 'r') {
 			run = true;

@@ -1,0 +1,20 @@
+AGENT VARIABLES DEBUG
+
+0.0
+
+Agent Index
+17075
+
+Displacement Average
+0.0
+
+Invert
+false
+
+Displacement Magnitude
+null
+
+Agent Points
+null
+
+f:999 a:17075

@@ -167,8 +167,8 @@ public class cellKarambaPres001 extends PApplet {
 	
 //	CAMERA
 	boolean defaultCam = false;
-	boolean makeVideo = false;
-	String resolution = "base";
+	boolean makeVideo = true;
+	String resolution = "1080";
 
 	
 	public void setup() {
@@ -188,10 +188,10 @@ public class cellKarambaPres001 extends PApplet {
 			cam.setRotations(-1.57f, -1.57f, 0.0f);// left view
 			cam.lookAt(0, 0, 0);
 		} else {
-			cam = new PeasyCam( this, -110.041695 , -101.8118 , 69.088356, 100 ); // saved view
-			cam.setRotations( 1.040868 , -0.6530811 , 2.468391 ); // saved view
-			cam.setDistance( 164.37101839892273 );
-			cam.lookAt( -10.163886 , 10.828931 , 3.1010828 );
+			cam = new PeasyCam( this, -107.47033 , -120.122406 , 82.42848, 100 ); // saved view
+			cam.setRotations( 1.259686 , -0.6917252 , -0.2400849 ); // saved view
+			cam.setDistance( 169.80766174098733 );
+			cam.lookAt( 0.84433615 , 4.376374 , 42.39563 );
 		}
 		
 		
@@ -414,7 +414,13 @@ public class cellKarambaPres001 extends PApplet {
 						
 						if ((mVdisp > dispMax) && (getDisplacements == true)) {
 							//vel.scaleSelf(facVelParent);
-							vel = new Vec3D(0.0f,0.0f,-0.2f);
+							for (int i = 0; i < agents.size(); i++) {
+								if(agents.get(i).z > 3) {
+									vel = new Vec3D(0.0f,0.0f,-1.0f);
+								} else {
+									vel = new Vec3D(0.0f,0.0f,1.0f);
+								}
+							}
 							invertMv = true;
 							debug5 = invertMv;
 						} else {

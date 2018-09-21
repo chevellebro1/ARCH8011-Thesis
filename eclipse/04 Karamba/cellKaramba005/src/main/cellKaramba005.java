@@ -167,8 +167,8 @@ public class cellKaramba005 extends PApplet {
 	
 //	CAMERA
 	boolean defaultCam = false;
-	boolean makeVideo = true;
-	String resolution = "1080";
+	boolean makeVideo = false;
+	String resolution = "base";
 
 	
 	public void setup() {
@@ -364,6 +364,7 @@ public class cellKaramba005 extends PApplet {
 			if (age < 250)
 				col = new int[] { PApplet.parseInt(strokeStart[0] + (age * red)), PApplet.parseInt(strokeStart[1] - (age * green)), 
 						PApplet.parseInt(strokeStart[2] + (age * blue)) };
+				//col = new int[] { 0, PApplet.parseInt(age * 0.5f), age };
 			findNeighbors();
 			normal = findNormal();
 		

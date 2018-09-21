@@ -3,7 +3,7 @@ AGENT VARIABLES DEBUG
 0.0
 
 Agent Index
-17075
+1914
 
 Displacement Average
 0.0
@@ -17,4 +17,4 @@ null
 Agent Points
 null
 
-f:999 a:17075
+f:489 a:1914

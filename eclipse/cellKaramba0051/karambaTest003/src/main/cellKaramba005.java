@@ -359,7 +359,7 @@ public class cellKaramba005 extends PApplet {
 			acc.clear();
 			if (age < 250)
 				col = new int[] { PApplet.parseInt(strokeStart[0] + (age * red)), PApplet.parseInt(strokeStart[1] - (age * green)), 
-						PApplet.parseInt(strokeStart[2] + (age * blue)) };
+						PApplet.parseInt(strokeStart[2] + (age * blue)) , 255 };
 			findNeighbors();
 			normal = findNormal();
 		

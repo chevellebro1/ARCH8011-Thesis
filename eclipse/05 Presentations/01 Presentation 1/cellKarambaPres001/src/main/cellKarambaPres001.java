@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.io.File;
 import java.io.PrintWriter;
 
-public class cellKaramba005 extends PApplet {
+public class cellKarambaPres001 extends PApplet {
 
 	/**
 	 * Cell Growth Simulation
@@ -73,8 +73,8 @@ public class cellKaramba005 extends PApplet {
 		
 	
 // RUN VARIABLES
-	boolean getDisplacements = false; // enable karamba
-	boolean bounceOn = false;
+	boolean getDisplacements = true; // enable karamba
+	boolean bounceOn = true;
 	boolean invertMv;
 	int getDisplacementInterval = 8;
 	float dispMax = 30;
@@ -120,7 +120,7 @@ public class cellKaramba005 extends PApplet {
 	float _facOrthogonal = 0.0f;// orthogonal force (0.05)
 	float _facAttractors = 0.0f;// force towards attractors (0.05)
 	float _facAttractorRotation = 0.0f;// force around attractors (0.01)
-	Vec3D _unary = new Vec3D(0.0f, 0.0f, 0.02f);// unary force (-0.005)
+	Vec3D _unary = new Vec3D(0.0f, 0.0f, 0.01f);// unary force (-0.005)
 	float _facFollowMesh = 0.0f;// force towards meshes (+/-0.01-0.05)
 	float _facVoxel = 0.0f;// force towards the closest voxel
 	int _minAge = 10;// minimum age for cell division (a larger number (10) inhibits the growth of tentacles)
@@ -373,13 +373,15 @@ public class cellKaramba005 extends PApplet {
 			if (neighbors.size() > 0)
 				acc.addSelf(forcePoint(neighbors.get(0), facNeighborsClosest));// force towards closest neighbor
 			acc.addSelf(forcePoint(neighborsFar, facNeighborsFar));// force towards all far neighbors
-
+			acc.addSelf(unary);// unary force
 			acc.addSelf(forceAttractors(atts, facAttractors));// force towards attractors
 			acc.addSelf(forceAttractorRotation(attsRotation, new Vec3D(0, 0, 1), facAttractorRotation));// force towards attractors
 			acc.addSelf(planarize(facPlanarize));// pull each cell onto a plane
 			acc.addSelf(forceStrata(facStrata));// pull each cell into parallel planes
 			acc.addSelf(forceOrthogonal(facOrthogonal));// pull each cell into orthogonal planes
-			acc.addSelf(unary);// unary force
+
+			
+			//acc.addSelf(unary);// unary force
 			acc.addSelf(followMesh(facFollowMesh));// pull towards the mesh
 			acc.addSelf(forceVoxel(facVoxel));// pull towards the closest voxel
 
@@ -411,8 +413,8 @@ public class cellKaramba005 extends PApplet {
 						mVdisp = agentNew.magnitude();
 						
 						if ((mVdisp > dispMax) && (getDisplacements == true)) {
-							vel.scaleSelf(facVelParent);
-							vel = new Vec3D(0.0f,0.0f,-0.02f);
+							//vel.scaleSelf(facVelParent);
+							vel = new Vec3D(0.0f,0.0f,-0.2f);
 							invertMv = true;
 							debug5 = invertMv;
 						} else {
@@ -2898,7 +2900,7 @@ public class cellKaramba005 extends PApplet {
       	
 
 	static public void main(String[] passedArgs) {
-		String[] appletArgs = new String[] { "main.cellKaramba005" };
+		String[] appletArgs = new String[] { "main.cellKarambaPres001" };
 		if (passedArgs != null) {
 			PApplet.main(concat(appletArgs, passedArgs));
 		} else {

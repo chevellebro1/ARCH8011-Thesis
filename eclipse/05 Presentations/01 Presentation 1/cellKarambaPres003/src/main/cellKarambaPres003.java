@@ -74,14 +74,13 @@ public class cellKarambaPres003 extends PApplet {
 	
 // RUN VARIABLES
 	boolean getDisplacements = true; // enable karamba
-	boolean bounceOn = true;
+	boolean bounceOn = false;
+	int supportZ = 6;
 	boolean invertMv;
 	int getDisplacementInterval = 8;
-	float dispMax = 15;
-	float supportZ = 10;
+	float dispMax = 30;
 	float dispAverage = 0;
 	float mVdisp;
-	Vec3D velK = new Vec3D(0.0f,0.0f,-0.1f);
 	ArrayList<Float> magList = new ArrayList<Float>();
 	
 
@@ -93,6 +92,7 @@ public class cellKarambaPres003 extends PApplet {
 	Agent debug4;
 	boolean debug5;
 	float debug6;
+	float debug7;
 	
 
 // VOXELS AND COMPONENTS
@@ -121,7 +121,7 @@ public class cellKarambaPres003 extends PApplet {
 	float _facOrthogonal = 0.0f;// orthogonal force (0.05)
 	float _facAttractors = 0.0f;// force towards attractors (0.05)
 	float _facAttractorRotation = 0.0f;// force around attractors (0.01)
-	Vec3D _unary = new Vec3D(0.0f, 0.0f, 0.005f);// unary force (-0.005)
+	Vec3D _unary = new Vec3D(0.0f, 0.0f, 0.0f);// unary force (-0.005)
 	float _facFollowMesh = 0.0f;// force towards meshes (+/-0.01-0.05)
 	float _facVoxel = 0.0f;// force towards the closest voxel
 	int _minAge = 10;// minimum age for cell division (a larger number (10) inhibits the growth of tentacles)
@@ -167,9 +167,9 @@ public class cellKarambaPres003 extends PApplet {
 	boolean debug = false;
 	
 //	CAMERA
-	boolean defaultCam = true;
-	boolean makeVideo = false;
-	String resolution = "base";
+	boolean defaultCam = false;
+	boolean makeVideo = true;
+	String resolution = "1080";
 
 	
 	public void setup() {
@@ -189,10 +189,10 @@ public class cellKarambaPres003 extends PApplet {
 			cam.setRotations(-1.57f, -1.57f, 0.0f);// left view
 			cam.lookAt(0, 0, 0);
 		} else {
-			cam = new PeasyCam( this, 77.61137 , -39.292778 , 174.97423, 100 ); // saved view
-			cam.setRotations( 0.42587256 , 0.6440617 , -0.19056806 ); // saved view
-			cam.setDistance( 179.96695403515804 );
-			cam.lookAt( -30.449492 , 20.159925 , 43.91573 );
+			cam = new PeasyCam( this, -185.04964 , -11.262495 , -10.792048, 100 ); // saved view
+			cam.setRotations( -3.1115565 , -1.5238837 , -1.5666721 ); // saved view
+			cam.setDistance( 185.3354177791549 );
+			cam.lookAt( 0.0818832 , -11.523512 , -2.1045864 );
 		}
 		
 		
@@ -239,6 +239,7 @@ public class cellKarambaPres003 extends PApplet {
 		attractors.add(new Attractor(new Vec3D(0, 0, -10), -1));
 		attractors.add(new Attractor(new Vec3D(50, 50, 0), -0.5f, 50, new boolean[] { true, true, false }));
 		attractors.add(new Attractor(new Vec3D(-50, -50, 0), -1, 50, new boolean[] { true, true, false }));
+		
 		// Create attractors from text file
 		// for(Vec3D pos : ImportPoints("input/Attractor.txt")) attractors.add(new
 		// Attractor(pos,1,70));
@@ -248,7 +249,7 @@ public class cellKarambaPres003 extends PApplet {
 		// AGENTS
 		randomSeed(0);
 		for (int i = 0; i < 10; i++) {
-			Vec3D pos = new Vec3D(random(-5.0f, 5.0f), random(-5.0f, 5.0f), random(10.0f, 15.0f));
+			Vec3D pos = new Vec3D(random(-5.0f, 5.0f), random(-5.0f, 5.0f), random(8.0f, 10.0f));
 			Vec3D vel = new Vec3D();
 			// Vec3D vel = new Vec3D(random(-0.01,0.01), random(-0.01,0.01),
 			// random(-0.01,0.01));
@@ -374,21 +375,19 @@ public class cellKarambaPres003 extends PApplet {
 			if (neighbors.size() > 0)
 				acc.addSelf(forcePoint(neighbors.get(0), facNeighborsClosest));// force towards closest neighbor
 			acc.addSelf(forcePoint(neighborsFar, facNeighborsFar));// force towards all far neighbors
-			acc.addSelf(unary);// unary force
+
 			acc.addSelf(forceAttractors(atts, facAttractors));// force towards attractors
 			acc.addSelf(forceAttractorRotation(attsRotation, new Vec3D(0, 0, 1), facAttractorRotation));// force towards attractors
 			acc.addSelf(planarize(facPlanarize));// pull each cell onto a plane
 			acc.addSelf(forceStrata(facStrata));// pull each cell into parallel planes
 			acc.addSelf(forceOrthogonal(facOrthogonal));// pull each cell into orthogonal planes
-
-			
 			acc.addSelf(unary);// unary force
 			acc.addSelf(followMesh(facFollowMesh));// pull towards the mesh
 			acc.addSelf(forceVoxel(facVoxel));// pull towards the closest voxel
 
 			// CONSTRAIN POSITION
 			if (bounceOn == true) {
-				bounce((float) 8.0);
+				bounce((float) 2.0);
 			}
 
 
@@ -404,8 +403,11 @@ public class cellKarambaPres003 extends PApplet {
 					if (distanceAverage > rangeDivide) {
 						Vec3D posNew = this;// position of the child cell
 						posNew.addSelf(new Vec3D(random(-offsetDivision, offsetDivision),
-								random(-offsetDivision, offsetDivision), random(-offsetDivision, offsetDivision)));// random offsets												
+								random(-offsetDivision, offsetDivision), random(-offsetDivision, offsetDivision)));// random offsets	
+						
 						Vec3D velNew = vel.scale(facVelChild);// velocity of the child cell
+						//Vec3D velNew = new Vec3D(0.0f,0.0f,0.01f);
+						
 						Agent agentNew = new Agent(posNew, velNew);
 						agentNew.displacement = displacement;
 						agentNew.neighbors = new ArrayList<Agent>(neighbors);
@@ -413,22 +415,9 @@ public class cellKarambaPres003 extends PApplet {
 						
 						mVdisp = agentNew.magnitude();
 						
-						if ((mVdisp > dispMax) && (getDisplacements == true)) {
-							//vel.scaleSelf(facVelParent);
-							for (int i = 0; i < agents.size(); i++) {
-								if(agents.get(i).z > supportZ) {
-									vel = new Vec3D(0.0f,0.0f,1.0f);
-								} else {
-									vel = new Vec3D(0.0f,0.0f,-1.0f);
-								}
-							}
-							invertMv = true;
-							debug5 = invertMv;
-						} else {
-							vel.scaleSelf(facVelParent);// set the velocity of the parent cell
-							invertMv = false;
-							debug5 = invertMv;
-						}
+						//vel.scaleSelf(facVelParent);// set the velocity of the parent cell
+						
+						vel = new Vec3D(0.0f,0.0f,-0.01f);
 						
 						neighbors.add(agentNew);
 						agentsNew.add(agentNew);
@@ -2587,7 +2576,7 @@ public class cellKarambaPres003 extends PApplet {
 			
 			for (int i = 0; i < points.size(); i++) {
 				total = total + points.get(i).magnitude(); // get magnitude totals
-				magList.add(Math.abs(points.get(i).magnitude())); // add magnitudes to ArrayList
+				magList.add(points.get(i).magnitude()); // add magnitudes to ArrayList
 			}
 			
 			
@@ -2722,7 +2711,7 @@ public class cellKarambaPres003 extends PApplet {
 		
 		output.println();
 		
-		output.println(debug6);
+		output.println(debug7);
 		
 		output.println();
 		

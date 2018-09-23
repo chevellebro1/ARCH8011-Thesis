@@ -73,7 +73,7 @@ public class cellKarambaPres004 extends PApplet {
 		
 	
 // RUN VARIABLES
-	boolean getDisplacements = false; // enable karamba
+	boolean getDisplacements = true; // enable karamba
 	boolean bounceOn = false;
 	boolean invertMv;
 	int getDisplacementInterval = 8;
@@ -120,7 +120,7 @@ public class cellKarambaPres004 extends PApplet {
 	float _facOrthogonal = 0.0f;// orthogonal force (0.05)
 	float _facAttractors = 0.0f;// force towards attractors (0.05)
 	float _facAttractorRotation = 0.0f;// force around attractors (0.01)
-	Vec3D _unary = new Vec3D(0.0f, 0.0f, 0.02f);// unary force (-0.005)
+	Vec3D _unary = new Vec3D(0.0f, 0.0f, 0.01f);// unary force (-0.005)
 	float _facFollowMesh = 0.0f;// force towards meshes (+/-0.01-0.05)
 	float _facVoxel = 0.0f;// force towards the closest voxel
 	int _minAge = 10;// minimum age for cell division (a larger number (10) inhibits the growth of tentacles)
@@ -167,8 +167,8 @@ public class cellKarambaPres004 extends PApplet {
 	
 //	CAMERA
 	boolean defaultCam = false;
-	boolean makeVideo = false;
-	String resolution = "base";
+	boolean makeVideo = true;
+	String resolution = "1080";
 
 	
 	public void setup() {
@@ -188,10 +188,10 @@ public class cellKarambaPres004 extends PApplet {
 			cam.setRotations(-1.57f, -1.57f, 0.0f);// left view
 			cam.lookAt(0, 0, 0);
 		} else {
-			cam = new PeasyCam( this, -110.041695 , -101.8118 , 69.088356, 100 ); // saved view
-			cam.setRotations( 1.040868 , -0.6530811 , 2.468391 ); // saved view
-			cam.setDistance( 164.37101839892273 );
-			cam.lookAt( -10.163886 , 10.828931 , 3.1010828 );
+			cam = new PeasyCam( this, -97.66128 , 94.72741 , -114.536606, 100 ); // saved view
+			cam.setRotations( -2.1719527 , -0.41964453 , -0.32643834 ); // saved view
+			cam.setDistance( 204.64398373671102 );
+			cam.lookAt( -14.281978 , -59.39563 , -8.833526 );
 		}
 		
 		
@@ -224,7 +224,7 @@ public class cellKarambaPres004 extends PApplet {
 	public void loadFiles() {
 		println("loading files...");
 		// MESHES
-		meshFollow = new Mesh("MeshFollow.ply");
+		//meshFollow = new Mesh("MeshFollow.ply");
 		// envSize = meshFollow.boundingBox();
 		center = envSize.get(0).add(envSize.get(1)).scale(0.5f);
 
@@ -409,17 +409,11 @@ public class cellKarambaPres004 extends PApplet {
 						agentNew.neighbors.add(this);
 						
 						mVdisp = agentNew.magnitude();
+						//vel.scaleSelf(facVelParent);// set the velocity of the parent cell
+
+						//vel.scaleSelf(facVelParent);
+						vel = new Vec3D(-0.2f,-0.2f,-0.2f);
 						
-						if ((mVdisp > dispMax) && (getDisplacements == true)) {
-							vel.scaleSelf(facVelParent);
-							vel = new Vec3D(0.0f,0.0f,-0.02f);
-							invertMv = true;
-							debug5 = invertMv;
-						} else {
-							vel.scaleSelf(facVelParent);// set the velocity of the parent cell
-							invertMv = false;
-							debug5 = invertMv;
-						}
 						
 						neighbors.add(agentNew);
 						agentsNew.add(agentNew);

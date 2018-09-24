@@ -5,7 +5,6 @@ INDEX VERSION 1.131+K:\University of Cincinnati\2019 Thesis Year\~github\ARCH801
 1507764275.index
 1071944811.index
 3996102163.index
-786012325.index
 1496471435.index
 1661392808.index
 1009463114.index

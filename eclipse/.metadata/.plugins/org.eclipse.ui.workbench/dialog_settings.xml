@@ -83,6 +83,7 @@
 		<item value="true" key="WizardZipFileResourceExportPage1.STORE_COMPRESS_CONTENTS_ID"/>
 		<item value="true" key="WizardZipFileResourceExportPage1.STORE_CREATE_STRUCTURE_ID"/>
 		<list key="WizardZipFileResourceExportPage1.STORE_DESTINATION_NAMES_ID">
+			<item value="C:\Users\Richie1\Dropbox\cellKaramba006.zip"/>
 			<item value="C:\Users\Richie1\Desktop\cellKaramba005.zip"/>
 			<item value="K:\University of Cincinnati\2019 Thesis Year\Thesis Studio 8009\Processing\eclipse\archive\cellKaramba005.zip"/>
 			<item value="K:\University of Cincinnati\2019 Thesis Year\Thesis Studio 8009\Processing\eclipse\archive\cellShell006.zip"/>

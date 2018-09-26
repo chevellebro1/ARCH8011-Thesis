@@ -26,4 +26,5 @@
     <fullyQualifiedTypeName name="main.cellKaramba.Face"/>
     <fullyQualifiedTypeName name="main.cellKaramba.Vertex"/>
     <fullyQualifiedTypeName name="main.cellKarambathread.Agent.ThreadMain"/>
+    <fullyQualifiedTypeName name="main.cellKaramba006.Face.Vec3D_Bool"/>
 </qualifiedTypeNameHistroy>

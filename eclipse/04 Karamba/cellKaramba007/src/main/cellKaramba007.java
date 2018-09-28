@@ -168,7 +168,7 @@ public class cellKaramba007 extends PApplet {
 //	CAMERA
 	boolean defaultCam = true;
 	boolean makeVideo = false;
-	String resolution = "1080";
+	String resolution = "base";
 
 	
 	public void setup() {
@@ -2979,6 +2979,9 @@ public class cellKaramba007 extends PApplet {
 				printLength = true;
 			showComponents ^= true;
 		}
+		if (key == 't')
+			showTrail ^= true;
+		
 		// SAVE image
 		if (key == 'i') {
 			saveImage();

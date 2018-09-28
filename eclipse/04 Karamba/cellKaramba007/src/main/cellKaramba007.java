@@ -20,13 +20,12 @@ import feb.Model;
 import feb.Node;
 import feb.Response;
 import feb.Vec3d;
-import main.cellKaramba006.Face.Vec3D_Bool;
 
 import java.util.ArrayList;
 import java.io.File;
 import java.io.PrintWriter;
 
-public class cellKaramba006 extends PApplet {
+public class cellKaramba007 extends PApplet {
 
 	/**
 	 * Cell Growth Simulation
@@ -171,7 +170,7 @@ public class cellKaramba006 extends PApplet {
 //	CAMERA
 	boolean defaultCam = true;
 	boolean makeVideo = false;
-	String resolution = "base";
+	String resolution = "1080";
 
 	
 	public void setup() {
@@ -1579,6 +1578,8 @@ public class cellKaramba006 extends PApplet {
 			    }
 			    return vertices.get(0).add(edge0.scale(s)).add(edge1.scale(t));
 			  }
+	}
+		  
 		
 		//SUPPORT CLASS FOR METHOD OUTPUT
 
@@ -1591,7 +1592,6 @@ public class cellKaramba006 extends PApplet {
 		  }
 		}
 		
-	}
 
 	/**
 	 * Cell Growth Simulation
@@ -3068,7 +3068,7 @@ public class cellKaramba006 extends PApplet {
       	
 
 	static public void main(String[] passedArgs) {
-		String[] appletArgs = new String[] { "main.cellKaramba006" };
+		String[] appletArgs = new String[] { "main.cellKaramba007" };
 		if (passedArgs != null) {
 			PApplet.main(concat(appletArgs, passedArgs));
 		} else {

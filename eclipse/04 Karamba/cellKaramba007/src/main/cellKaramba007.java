@@ -73,7 +73,8 @@ public class cellKaramba007 extends PApplet {
 	ArrayList<Mesh> meshes = new ArrayList<Mesh>();
 
 	
-// RUN VARIABLES
+// KARAMBA VARIABLES
+	ArrayList<Float> magList = new ArrayList<Float>();
 	boolean getDisplacements = false; // enable karamba
 	boolean bounceOn = false;
 	boolean invertMv;
@@ -81,9 +82,6 @@ public class cellKaramba007 extends PApplet {
 	float dispMax = 30;
 	float dispAverage = 0;
 	float mVdisp;
-	Vec3D velK = new Vec3D(0.0f,0.0f,-0.1f);
-	ArrayList<Float> magList = new ArrayList<Float>();
-	
 
 	
 // DEBUG
